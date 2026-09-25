@@ -163,10 +163,11 @@
   .aimodal-hint{padding:9px 20px;text-align:center;font-size:12.5px;color:rgba(242,240,236,.55)}
 
   /* 图片灯箱（ESC / 点空白 / ✕ 关闭） */
-  .lightbox{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;
+  .lightbox{position:fixed;inset:0;z-index:200;display:none;overflow:auto;
     background:rgba(10,10,12,.9);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
   .lightbox.on{display:flex}
-  .lightbox img{max-width:94vw;max-height:92vh;border-radius:10px;box-shadow:0 30px 90px rgba(0,0,0,.6)}
+  .lightbox img{margin:auto;max-width:94vw;max-height:92vh;border-radius:10px;box-shadow:0 30px 90px rgba(0,0,0,.6);cursor:zoom-in}
+  .lightbox img.big{max-width:none;max-height:none;cursor:zoom-out}
   .lightbox .lb-x{position:fixed;top:18px;right:22px;width:44px;height:44px;border-radius:50%;
     border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;
     font-size:20px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .25s}
@@ -257,7 +258,7 @@
   <div class="wrap">
     <div class="hero-grid">
       <div>
-        <div class="kicker" data-ap="up" style="--d:.4s">PORTFOLIO · 2026</div>
+        <div class="kicker" data-ap="up" style="--d:.4s">PORTFOLIO</div>
         <h1 class="mask" style="--d:.45s"><span>黄科斌</span></h1>
         <p class="sub">
           <span class="sub-l" data-ap="up" style="--d:.8s;--y:10px">非遗数字化实践者 × 微信小程序独立开发者</span>
@@ -376,7 +377,7 @@
     </div>
 
     <div style="margin-top:80px;font-size:22px;font-weight:800" data-reveal="left">视频剪辑 · SELECTED EDITS</div>
-    <div class="grid" style="margin-top:26px" data-stagger>
+    <div class="grid" style="margin-top:26px;align-items:start" data-stagger>
       <div class="card" data-reveal>
         <div class="media"><video controls playsinline preload="metadata" poster="assets/poster-edit-01.jpg" src="assets/edit-01.mp4"></video></div>
         <div class="body">
@@ -385,12 +386,12 @@
           <div class="tags"><span class="tag">剪映</span><span class="tag">竖屏 1080×1920</span><span class="tag">二次创作</span></div>
         </div>
       </div>
-      <div class="card" data-reveal>
+      <div class="card" style="align-self:center" data-reveal>
         <div class="media"><video controls playsinline preload="metadata" poster="assets/poster-edit-02.jpg" src="assets/edit-02.mp4"></video></div>
-        <div class="body">
+        <div class="body" style="text-align:center">
           <h3>投稿视频 · 横屏成片</h3>
           <p>时长 57 秒。自制片头开场卡与片尾关注引导，按 B 站投稿规范完整包装，可直接面向平台发布。</p>
-          <div class="tags"><span class="tag">剪映</span><span class="tag">横屏 1280×576</span><span class="tag">开场设计</span></div>
+          <div class="tags" style="justify-content:center"><span class="tag">剪映</span><span class="tag">横屏 1280×576</span><span class="tag">开场设计</span></div>
         </div>
       </div>
       <div class="card" data-reveal>
@@ -490,7 +491,7 @@
 
 <footer>
   <div class="wrap">
-    <div data-reveal="fade">© 2026 黄科斌 · 个人作品集</div>
+    <div data-reveal="fade">© 黄科斌 · 个人作品集</div>
     <div data-reveal="fade" style="--d:.12s"><a href="https://github.com/littlemonster-huang" target="_blank" rel="noopener">github.com/littlemonster-huang</a></div>
   </div>
 </footer>
@@ -508,7 +509,7 @@
 <div class="lightbox" id="lightbox" aria-hidden="true">
   <button class="lb-x" type="button" aria-label="关闭预览">✕</button>
   <img alt="">
-  <div class="lb-hint">按 ESC 或点击空白处关闭</div>
+  <div class="lb-hint">点击图片放大 / 还原 · 按 ESC 或点击空白处关闭</div>
 </div>
 
 <script>
@@ -901,6 +902,7 @@
       img.src = a.getAttribute('href');
       var t = a.querySelector('img');
       img.alt = t ? t.alt : '';
+      img.classList.remove('big');
       lb.classList.add('on');
       lb.setAttribute('aria-hidden', 'false');
       doc.documentElement.style.overflow = 'hidden';
@@ -909,9 +911,11 @@
       if(!lb.classList.contains('on')) return;
       lb.classList.remove('on');
       lb.setAttribute('aria-hidden', 'true');
+      img.classList.remove('big');
       doc.documentElement.style.overflow = '';
       setTimeout(function(){ img.src = ''; }, 300);
     }
+    img.addEventListener('click', function(e){ e.stopPropagation(); img.classList.toggle('big'); });
     doc.addEventListener('click', function(e){
       var a = e.target.closest('a[data-zoom]');
       if(a){ e.preventDefault(); open(a); return; }
