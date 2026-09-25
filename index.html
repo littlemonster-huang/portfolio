@@ -511,7 +511,7 @@
 <div class="lightbox" id="lightbox" aria-hidden="true">
   <button class="lb-x" type="button" aria-label="关闭预览">✕</button>
   <img alt="">
-  <div class="lb-hint">点击图片放大 / 还原 · 按 ESC 或点击空白处关闭</div>
+  <div class="lb-hint">滚轮缩放 · 点击图片放大 / 还原 · 按 ESC 或点击空白处关闭</div>
 </div>
 
 <script>
@@ -900,11 +900,32 @@
     var lb = doc.getElementById('lightbox');
     if(!lb) return;
     var img = lb.querySelector('img');
+    var zoom = 1;
+    function applyZoom(){
+      if(zoom <= 1){
+        zoom = 1;
+        img.classList.remove('big');
+        img.style.width = '';
+        return;
+      }
+      if(!img.naturalWidth){ return; }
+      var fit = Math.min(
+        (doc.documentElement.clientWidth * 0.94) / img.naturalWidth,
+        (doc.documentElement.clientHeight * 0.92) / img.naturalHeight
+      );
+      img.classList.add('big');
+      img.style.width = Math.round(img.naturalWidth * fit * zoom) + 'px';
+    }
+    function resetZoom(){
+      zoom = 1;
+      img.classList.remove('big');
+      img.style.width = '';
+    }
     function open(a){
       img.src = a.getAttribute('href');
       var t = a.querySelector('img');
       img.alt = t ? t.alt : '';
-      img.classList.remove('big');
+      resetZoom();
       lb.classList.add('on');
       lb.setAttribute('aria-hidden', 'false');
       doc.documentElement.style.overflow = 'hidden';
@@ -913,11 +934,21 @@
       if(!lb.classList.contains('on')) return;
       lb.classList.remove('on');
       lb.setAttribute('aria-hidden', 'true');
-      img.classList.remove('big');
+      resetZoom();
       doc.documentElement.style.overflow = '';
       setTimeout(function(){ img.src = ''; }, 300);
     }
-    img.addEventListener('click', function(e){ e.stopPropagation(); img.classList.toggle('big'); });
+    img.addEventListener('click', function(e){
+      e.stopPropagation();
+      zoom = zoom > 1 ? 1 : 2.5;
+      applyZoom();
+    });
+    lb.addEventListener('wheel', function(e){
+      if(!lb.classList.contains('on')) return;
+      e.preventDefault();
+      zoom = Math.min(10, Math.max(1, zoom * (e.deltaY < 0 ? 1.15 : 1 / 1.15)));
+      applyZoom();
+    }, { passive: false });
     doc.addEventListener('click', function(e){
       var a = e.target.closest('a[data-zoom]');
       if(a){ e.preventDefault(); open(a); return; }
