@@ -1,0 +1,1556 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>茶之都 · 饮品销售智能分析台</title>
+<style>
+  *{box-sizing:border-box}
+  :root{
+    --bg:#f4f5f7; --card:#ffffff; --ink:#16161a; --ink2:#5b5c66; --ink3:#8b8d99;
+    --line:#e4e5ea; --line2:#eef0f3;
+    --wine:#C24558; --wine-d:#5C1620; --wine-l:#fdf2f4;
+    --up:#C24558; --down:#3f8f6b; --info:#3f6ea8; --warn:#b5813a;
+    --shadow:0 1px 2px rgba(20,20,30,.04),0 8px 24px -12px rgba(20,20,30,.14);
+    --r:12px;
+  }
+  html,body{height:100%}
+  body{
+    margin:0;background:var(--bg);color:var(--ink);
+    font:14px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  button,input{font:inherit;color:inherit}
+
+  /* ---------- 顶栏 ---------- */
+  .topbar{
+    height:58px;background:var(--card);border-bottom:1px solid var(--line);
+    display:flex;align-items:center;gap:16px;padding:0 20px;position:relative;z-index:20;
+  }
+  .brand{display:flex;align-items:center;gap:10px;min-width:0}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--wine);flex:none}
+  .brand h1{font-size:15px;font-weight:700;margin:0;letter-spacing:.01em;white-space:nowrap}
+  .brand .sub{color:var(--ink3);font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .topbar .spacer{flex:1}
+  .chip{
+    display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 11px;border-radius:999px;
+    background:#f1f2f5;color:var(--ink2);font-size:12.5px;white-space:nowrap;
+  }
+  .chip b{color:var(--ink);font-weight:600}
+  .chip .led{width:6px;height:6px;border-radius:50%;background:var(--down);flex:none}
+  .btn{
+    height:32px;padding:0 14px;border-radius:8px;border:1px solid var(--line);background:var(--card);
+    cursor:pointer;font-size:13px;color:var(--ink2);transition:.15s;white-space:nowrap;
+  }
+  .btn:hover{border-color:#cfd1d8;color:var(--ink);background:#fafbfc}
+  .btn.primary{background:var(--wine);border-color:var(--wine);color:#fff}
+  .btn.primary:hover{background:#ad3b4d;border-color:#ad3b4d}
+  .btn.ghost{border-style:dashed;color:var(--ink3)}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+
+  /* ---------- 布局 ---------- */
+  .layout{display:flex;gap:0;height:calc(100vh - 58px);min-height:0}
+  .left{flex:1;min-width:0;display:flex;flex-direction:column;min-height:0}
+  .right{
+    width:430px;flex:none;border-left:1px solid var(--line);background:var(--card);
+    display:flex;flex-direction:column;min-height:0;
+  }
+
+  /* ---------- 表格区 ---------- */
+  .pane-head{
+    display:flex;align-items:center;gap:12px;padding:12px 18px 10px;flex-wrap:wrap;
+  }
+  .pane-head h2{margin:0;font-size:14px;font-weight:650}
+  .seg{display:flex;background:#ecedf1;border-radius:9px;padding:2px;gap:2px}
+  .seg button{
+    border:0;background:transparent;border-radius:7px;padding:5px 12px;font-size:12.5px;
+    color:var(--ink2);cursor:pointer;transition:.15s;white-space:nowrap;
+  }
+  .seg button.on{background:var(--card);color:var(--ink);font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.07)}
+  .hint{color:var(--ink3);font-size:12.5px;margin-left:auto;white-space:nowrap}
+
+  .table-wrap{
+    flex:1;min-height:0;overflow:auto;background:var(--card);
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+    user-select:none;position:relative;
+  }
+  table{border-collapse:separate;border-spacing:0;font-size:13px;white-space:nowrap}
+  thead th{
+    position:sticky;top:0;z-index:6;background:#fafbfc;color:var(--ink2);font-weight:600;
+    font-size:12px;line-height:1.35;padding:8px 10px;min-width:74px;
+    border-bottom:1px solid var(--line);
+    border-right:1px solid var(--line2);text-align:right;
+  }
+  thead th.l{text-align:left}
+  thead th .u{display:block;color:var(--ink3);font-weight:400;font-size:10.5px;margin-top:1px}
+  thead th.sel{background:var(--wine-l);color:var(--wine-d)}
+  tbody td{
+    padding:7px 10px;border-bottom:1px solid var(--line2);border-right:1px solid var(--line2);
+    text-align:right;font-variant-numeric:tabular-nums;color:var(--ink);
+  }
+  tbody td.l{text-align:left}
+  tbody td.name{font-weight:550}
+  tbody tr:hover td{background:#fafbfc}
+  tbody td.sel{background:var(--wine-l)!important;box-shadow:inset 0 0 0 1px rgba(194,69,88,.22)}
+  tbody td.zero{color:#c8cad2}
+  td .tag{
+    display:inline-block;padding:1px 7px;border-radius:999px;font-size:11px;
+    background:#f1f2f5;color:var(--ink2);border:1px solid var(--line);
+  }
+  td .tag.n{background:var(--wine-l);color:var(--wine-d);border-color:#f2d8dd}
+  .rowh{position:sticky;left:50px;z-index:5;background:#fafbfc;color:var(--ink3);
+    text-align:center!important;font-size:11.5px;border-right:1px solid var(--line)}
+  thead .corner{left:0;z-index:8;text-align:center}
+  td.corner{left:0!important;min-width:50px;width:50px}
+  tbody td.rowh.sel{background:var(--wine-l)!important;color:var(--wine-d)}
+  .num-up{color:var(--up)}
+  .num-down{color:var(--down)}
+  .num-flat{color:var(--ink3)}
+  .foot-row td{background:#fafbfc;font-weight:650;border-top:1px solid var(--line);position:sticky;bottom:0}
+
+  /* ---------- 选区条 ---------- */
+  .selbar{
+    display:flex;align-items:center;gap:10px;padding:10px 18px;background:var(--card);
+    min-height:52px;flex-wrap:wrap;
+  }
+  .selbar .sel-txt{font-size:12.5px;color:var(--ink2)}
+  .selbar .sel-txt b{color:var(--wine-d)}
+  .selbar .kpi-mini{display:flex;gap:14px;flex-wrap:wrap}
+  .selbar .kpi-mini span{font-size:12.5px;color:var(--ink3)}
+  .selbar .kpi-mini b{color:var(--ink);font-variant-numeric:tabular-nums}
+  .selbar .grow{flex:1}
+
+  /* ---------- 右侧分析面板 ---------- */
+  .ai-head{padding:14px 18px 10px;border-bottom:1px solid var(--line2)}
+  .ai-head .t{display:flex;align-items:center;gap:9px}
+  .ai-head .t h2{margin:0;font-size:14px;font-weight:650}
+  .ai-head .t .badge{
+    font-size:11px;padding:2px 8px;border-radius:999px;background:var(--wine-l);
+    color:var(--wine-d);border:1px solid #f2d8dd;
+  }
+  .ai-head p{margin:7px 0 0;font-size:12.5px;color:var(--ink3);line-height:1.55}
+  .quick{display:flex;gap:7px;padding:11px 18px 4px;flex-wrap:wrap}
+  .quick button{
+    border:1px solid var(--line);background:var(--card);border-radius:999px;padding:5px 12px;
+    font-size:12.5px;color:var(--ink2);cursor:pointer;transition:.15s;
+  }
+  .quick button:hover{border-color:var(--wine);color:var(--wine-d);background:var(--wine-l)}
+  .qa{display:flex;gap:8px;padding:10px 18px 12px;border-bottom:1px solid var(--line2)}
+  .qa input{
+    flex:1;height:36px;border:1px solid var(--line);border-radius:9px;padding:0 12px;background:#fbfbfc;
+    outline:none;font-size:13px;transition:.15s;
+  }
+  .qa input:focus{border-color:var(--wine);background:#fff;box-shadow:0 0 0 3px rgba(194,69,88,.08)}
+  .qa button{height:36px;padding:0 15px;border-radius:9px;border:0;background:var(--wine);color:#fff;
+    font-size:13px;cursor:pointer;transition:.15s}
+  .qa button:hover{background:#ad3b4d}
+
+  .feed{flex:1;min-height:0;overflow:auto;padding:14px 18px 30px;scroll-behavior:smooth}
+  .feed .empty{color:var(--ink3);font-size:13px;line-height:1.75;padding:6px 0}
+  .feed .empty b{color:var(--ink2)}
+
+  .block{margin-bottom:16px;animation:pop .22s ease-out}
+  @keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .block > h3{
+    margin:0 0 9px;font-size:12px;font-weight:650;color:var(--ink3);letter-spacing:.06em;
+    display:flex;align-items:center;gap:8px;
+  }
+  .block > h3::after{content:"";flex:1;height:1px;background:var(--line2)}
+
+  .lead{
+    background:linear-gradient(180deg,#fdf5f6,#fff);border:1px solid #f3dfe3;border-radius:var(--r);
+    padding:13px 15px;font-size:13.5px;line-height:1.72;color:#3a2a2e;
+  }
+  .lead b{color:var(--wine-d)}
+  .lead .kbd{font-variant-numeric:tabular-nums;font-weight:650}
+
+  .kpis{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+  .kpi{
+    border:1px solid var(--line);border-radius:var(--r);padding:11px 13px;background:var(--card);
+  }
+  .kpi .k{font-size:12px;color:var(--ink3)}
+  .kpi .v{font-size:19px;font-weight:700;letter-spacing:-.01em;margin-top:2px;font-variant-numeric:tabular-nums}
+  .kpi .n{font-size:11.5px;color:var(--ink3);margin-top:2px}
+  .kpi .n.up{color:var(--up)}
+  .kpi .n.down{color:var(--down)}
+
+  .card{
+    border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;background:var(--card);
+    margin-bottom:9px;position:relative;overflow:hidden;
+  }
+  .card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--info)}
+  .card.t-up::before{background:var(--up)}
+  .card.t-down::before{background:var(--down)}
+  .card.t-warn::before{background:var(--warn)}
+  .card .ct{font-size:13.5px;font-weight:650;margin:0 0 4px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .card .ct .pill{font-size:11px;font-weight:500;padding:1px 7px;border-radius:999px;background:#f1f2f5;color:var(--ink2)}
+  .card .cb{font-size:13px;color:#33343c;line-height:1.68}
+  .card .cb em{font-style:normal;font-weight:650;font-variant-numeric:tabular-nums}
+  .card .cb em.up{color:var(--up)}
+  .card .cb em.down{color:var(--down)}
+  .card ul.ev{margin:8px 0 0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:6px}
+  .card ul.ev li{
+    font-size:11.5px;color:var(--ink2);background:#f6f7f9;border:1px solid var(--line2);
+    border-radius:999px;padding:2px 9px;font-variant-numeric:tabular-nums;
+  }
+
+  ol.acts{margin:0;padding:0;list-style:none;counter-reset:a}
+  ol.acts li{
+    counter-increment:a;position:relative;padding:11px 13px 11px 40px;border:1px solid var(--line);
+    border-radius:var(--r);margin-bottom:9px;background:var(--card);font-size:13px;line-height:1.66;
+  }
+  ol.acts li::before{
+    content:counter(a);position:absolute;left:13px;top:11px;width:19px;height:19px;border-radius:50%;
+    background:var(--wine);color:#fff;font-size:11.5px;font-weight:650;display:flex;align-items:center;justify-content:center;
+  }
+  ol.acts li b{font-weight:650}
+  ol.acts li .why{display:block;color:var(--ink3);font-size:12px;margin-top:3px}
+
+  .ranks{width:100%;border-collapse:collapse;font-size:12.5px}
+  .ranks th{text-align:right;padding:5px 7px;border-bottom:1px solid var(--line);color:var(--ink3);font-weight:600;font-size:11.5px}
+  .ranks th:first-child,.ranks td:first-child{text-align:left}
+  .ranks td{padding:6px 7px;border-bottom:1px solid var(--line2);text-align:right;font-variant-numeric:tabular-nums}
+  .ranks td:first-child{color:var(--ink)}
+  .ranks tr:last-child td{border-bottom:0}
+  .bar{position:relative;height:6px;border-radius:99px;background:#f0f1f4;overflow:hidden;min-width:44px}
+  .bar i{position:absolute;left:0;top:0;bottom:0;background:var(--wine);border-radius:99px;opacity:.75}
+
+  .note-list{margin:0;padding:0;list-style:none}
+  .note-list li{
+    font-size:12.5px;color:var(--ink2);line-height:1.7;padding:7px 0;border-bottom:1px dashed var(--line);
+  }
+  .note-list li:last-child{border-bottom:0}
+  .note-list b{color:var(--ink);font-weight:650}
+  .note-list li.hot{color:var(--wine-d)}
+
+  .typing{display:inline-flex;gap:4px;align-items:center;color:var(--ink3);font-size:13px}
+  .typing i{width:5px;height:5px;border-radius:50%;background:var(--ink3);animation:bl 1s infinite}
+  .typing i:nth-child(2){animation-delay:.15s}
+  .typing i:nth-child(3){animation-delay:.3s}
+  @keyframes bl{0%,60%,100%{opacity:.25}30%{opacity:1}}
+
+  .toast{
+    position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(10px);opacity:0;
+    background:#1d1d22;color:#fff;font-size:13px;padding:9px 16px;border-radius:9px;
+    transition:.25s;pointer-events:none;z-index:99;
+  }
+  .toast.on{opacity:1;transform:translateX(-50%)}
+  input[type=file]{display:none}
+
+  /* ---------- AI 模块 ---------- */
+  .ai-bar{display:flex;align-items:center;gap:9px;padding:11px 18px 2px}
+  .ai-bar .btn{height:34px}
+  .ai-bar .state{font-size:12px;color:var(--ink3);margin-left:auto;text-align:right}
+  .ai-bar .state.on{color:var(--down)}
+  .ai-bar .state.err{color:var(--warn)}
+  .md h4{margin:12px 0 5px;font-size:13px;font-weight:650;color:var(--wine-d)}
+  .md h4:first-child{margin-top:0}
+  .md p{margin:6px 0;font-size:13px;line-height:1.74;color:#33343c}
+  .md ul,.md ol{margin:6px 0;padding-left:20px}
+  .md li{font-size:13px;line-height:1.74;margin:3px 0;color:#33343c}
+  .md strong{font-weight:650;color:var(--wine-d)}
+  .md blockquote{
+    margin:8px 0;padding:7px 12px;border-left:3px solid var(--line);background:#fafbfc;
+    color:var(--ink2);font-size:12.5px;border-radius:0 8px 8px 0;
+  }
+  .caret{display:inline-block;width:7px;height:14px;background:var(--wine);margin-left:2px;
+    vertical-align:-2px;animation:bl .9s infinite;border-radius:1px}
+  .ai-meta{display:flex;align-items:center;gap:10px;font-size:11.5px;color:var(--ink3);padding:3px 2px 0}
+  .ai-meta button{height:26px;padding:0 11px;font-size:12px;border-radius:7px;border:1px solid var(--line);
+    background:#fff;color:var(--ink2);cursor:pointer}
+  .ai-meta button:hover{border-color:#cfd1d8;color:var(--ink)}
+
+  @media(max-width:1180px){
+    .layout{flex-direction:column;height:auto}
+    .left{height:auto}
+    .table-wrap{max-height:56vh}
+    .right{width:auto;border-left:0;border-top:1px solid var(--line)}
+    .feed{overflow:visible;max-height:none}
+  }
+  @media(max-width:640px){
+    .topbar{height:auto;padding:10px 14px;flex-wrap:wrap;gap:10px}
+    .layout{height:auto}
+    .brand .sub{display:none}
+    .kpis{grid-template-columns:1fr}
+    .hint{display:none}
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="dot"></span>
+    <h1>茶之都 · 饮品销售智能分析台</h1>
+    <span class="sub" id="docTitle">2025年1–2月 · 15天周期版</span>
+  </div>
+  <div class="spacer"></div>
+  <span class="chip" title="内置引擎本地出结构化结论；AI 深度解读调用云端大模型"><span class="led"></span>引擎 <b>本地 + 云端 AI</b></span>
+  <button class="btn ghost" id="btnImport">导入表格</button>
+  <input type="file" id="fileInput" accept=".xlsx,.xls,.csv">
+  <button class="btn primary" id="btnSummary">智能摘要</button>
+</header>
+
+<main class="layout">
+  <section class="left">
+    <div class="pane-head">
+      <h2 id="gridTitle">销售数据</h2>
+      <div class="seg" id="viewSeg">
+        <button data-view="qty" class="on">销量明细</button>
+        <button data-view="amt">销售额明细</button>
+        <button data-view="full">完整列</button>
+      </div>
+      <span class="hint">鼠标拖拽框选单元格 · 点行号选整行 · 点列头选整列</span>
+    </div>
+
+    <div class="table-wrap" id="tableWrap">
+      <table id="grid">
+        <thead><tr id="theadRow"></tr></thead>
+        <tbody id="tbody"></tbody>
+        <tfoot id="tfoot"></tfoot>
+      </table>
+    </div>
+
+    <div class="selbar">
+      <span class="sel-txt" id="selTxt">未选中区域 · 可先「智能摘要」看全表结论</span>
+      <div class="kpi-mini" id="selKpis"></div>
+      <span class="grow"></span>
+      <button class="btn" id="btnClearSel" disabled>清除选区</button>
+      <button class="btn primary" id="btnRange" disabled>分析选中区域</button>
+    </div>
+  </section>
+
+  <aside class="right">
+    <div class="ai-head">
+      <div class="t">
+        <h2>分析结果</h2>
+        <span class="badge">本地引擎 + 云端大模型</span>
+      </div>
+      <p>「智能摘要」用内置引擎秒出结构化结论；「AI 深度解读」把当前数据（或框选区域）交给大模型自由分析。框选单元格后可只分析你圈出来的那部分。</p>
+    </div>
+    <div class="ai-bar">
+      <button class="btn primary" id="btnAI">AI 深度解读</button>
+      <button class="btn" id="btnAIStop" style="display:none">停止生成</button>
+      <span class="state" id="aiState">大模型待命</span>
+    </div>
+    <div class="quick" id="quick">
+      <button data-q="主推">该主推哪款</button>
+      <button data-q="下滑">下滑最多</button>
+      <button data-q="新品">新品表现</button>
+      <button data-q="备货">下月备货</button>
+      <button data-q="价格">价格带</button>
+      <button data-q="月度">月度对比</button>
+      <button data-q="口径">数据口径</button>
+    </div>
+    <div class="qa">
+      <input id="askInput" placeholder="问点什么，例如：哪些饮品该下架？">
+      <button id="askBtn">分析</button>
+    </div>
+    <div class="feed" id="feed">
+      <div class="empty">
+        <b>等待分析。</b><br>
+        先用上方<code>智能摘要</code>拿到全店结论；<br>
+        也可以在左侧表格里拖选一块数据，再做针对性分析。
+      </div>
+    </div>
+  </aside>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   茶之都饮品销售 · 智能分析台
+   数据源：茶之都2025年1-2月饮品销售统计（15天周期版）
+   ============================================================ */
+
+/* ---------- 1. 原始数据 ---------- */
+const SEED_ROWS = [{"no":1,"name":"茉上花开","price":8.0,"type":"新品","q":[22.0,324.0,311.0,298.0],"note":"新品（1月中旬海报宣发后主推）"},{"no":2,"name":"丛声杏香","price":8.0,"type":"新品","q":[9.0,14.0,12.0,11.0],"note":"新品（1月中旬海报宣发后主推）"},{"no":3,"name":"翠枝奶茉","price":10.0,"type":"新品","q":[8.0,12.0,11.0,10.0],"note":"新品（1月中旬海报宣发后主推）"},{"no":4,"name":"布蕾啵啵奶茶","price":10.0,"type":"常规","q":[21.0,22.0,20.0,17.0],"note":""},{"no":5,"name":"手炒黑糖珍珠红玉鲜奶茶","price":7.0,"type":"常规","q":[42.0,47.0,45.0,38.0],"note":""},{"no":6,"name":"手炒黑糖珍珠绿研鲜奶茶","price":7.0,"type":"常规","q":[28.0,32.0,29.0,26.0],"note":""},{"no":7,"name":"手炒黑糖珍珠乌龙鲜奶茶","price":7.0,"type":"常规","q":[26.0,30.0,27.0,24.0],"note":""},{"no":8,"name":"生椰黑糖珍珠","price":10.0,"type":"常规","q":[18.0,24.0,23.0,19.0],"note":""},{"no":9,"name":"现蒸芋圆芋泥红玉鲜奶茶","price":8.0,"type":"常规","q":[24.0,26.0,25.0,22.0],"note":""},{"no":10,"name":"现蒸芋圆芋泥茉莉鲜奶茶","price":8.0,"type":"常规","q":[22.0,25.0,22.0,20.0],"note":""},{"no":11,"name":"现蒸芋圆芋泥乌龙鲜奶茶","price":8.0,"type":"常规","q":[21.0,24.0,21.0,19.0],"note":""},{"no":12,"name":"现蒸芋泥青稞红玉鲜奶茶","price":8.0,"type":"常规","q":[14.0,20.0,18.0,17.0],"note":""},{"no":13,"name":"生椰芋圆芋泥","price":12.0,"type":"常规","q":[13.0,18.0,16.0,15.0],"note":""},{"no":14,"name":"芋泥啵啵鲜奶","price":12.0,"type":"常规","q":[14.0,18.0,16.0,15.0],"note":""},{"no":15,"name":"杨枝甘露","price":12.0,"type":"常规","q":[25.0,27.0,26.0,22.0],"note":""},{"no":16,"name":"草莓酸奶啵啵","price":13.0,"type":"常规","q":[15.0,19.0,17.0,15.0],"note":""},{"no":17,"name":"都市烤奶","price":7.0,"type":"常规","q":[52.0,58.0,55.0,46.0],"note":""},{"no":18,"name":"茉莉烤奶","price":7.0,"type":"常规","q":[32.0,35.0,31.0,28.0],"note":""},{"no":19,"name":"有料烤奶（椰果/红豆/布丁）","price":8.0,"type":"常规","q":[45.0,49.0,47.0,39.0],"note":""},{"no":20,"name":"招牌烧仙草","price":8.0,"type":"常规","q":[30.0,34.0,32.0,26.0],"note":""},{"no":21,"name":"清爽柠檬汁","price":7.0,"type":"常规","q":[21.0,24.0,21.0,19.0],"note":""},{"no":22,"name":"鸭屎香柠檬茶","price":8.0,"type":"常规","q":[27.0,31.0,30.0,25.0],"note":""},{"no":23,"name":"西柠绿茶","price":8.0,"type":"常规","q":[18.0,23.0,21.0,19.0],"note":""},{"no":24,"name":"老盐柠檬茶","price":9.0,"type":"常规","q":[17.0,22.0,20.0,18.0],"note":""},{"no":25,"name":"鲜柠檬养乐多","price":8.0,"type":"常规","q":[20.0,23.0,21.0,19.0],"note":""},{"no":26,"name":"金桔柠檬汁","price":8.0,"type":"常规","q":[15.0,19.0,17.0,16.0],"note":""},{"no":27,"name":"鲜榨西瓜汁","price":8.0,"type":"常规","q":[8.0,12.0,10.0,9.0],"note":""},{"no":28,"name":"爆芒百香果","price":10.0,"type":"常规","q":[14.0,18.0,16.0,15.0],"note":""},{"no":29,"name":"超级水果茶","price":10.0,"type":"常规","q":[12.0,15.0,13.0,12.0],"note":""},{"no":30,"name":"红玉茗茶","price":4.0,"type":"常规","q":[26.0,33.0,32.0,28.0],"note":""},{"no":31,"name":"茉莉绿茶","price":4.0,"type":"常规","q":[24.0,30.0,29.0,24.0],"note":""},{"no":32,"name":"碳焙乌龙茶","price":4.0,"type":"常规","q":[20.0,25.0,22.0,20.0],"note":""},{"no":33,"name":"卡布奇诺","price":8.0,"type":"常规","q":[10.0,13.0,12.0,11.0],"note":""},{"no":34,"name":"芝士红玉奶盖茶","price":10.0,"type":"常规","q":[21.0,22.0,20.0,17.0],"note":""},{"no":35,"name":"芝士茉莉奶盖茶","price":10.0,"type":"常规","q":[20.0,22.0,20.0,17.0],"note":""},{"no":36,"name":"芝士乌龙奶盖茶","price":10.0,"type":"常规","q":[16.0,18.0,16.0,14.0],"note":""}];
+
+const META = {
+  file: '茶之都2025年1-2月饮品销售统计（15天周期版）',
+  periods: [
+    { key:'q0', label:'1月上半月', range:'1.1–1.15' },
+    { key:'q1', label:'1月下半月', range:'1.16–1.31' },
+    { key:'q2', label:'2月上半月', range:'2.1–2.15'  },
+    { key:'q3', label:'2月下半月', range:'2.16–2.28' }
+  ],
+  notes: [{"k":"数据来源（重要）","v":"门店原始销售账单仅保留约两个月，2025 年 1-2 月账单已无法调取；本表各期销量由本人凭在职期间的现场记忆估算补录，店长已同意由本人自行填写。"},{"k":"填写纪律","v":"填「记忆中的大概数」：用整数、不要凑精确到个位的假精确；某款饮品某期没有印象就留空，宁缺毋假。"},{"k":"统计周期","v":"每 15 天一个统计周期：1月上半月（1.1–1.15）、1月下半月（1.16–1.31）、2月上半月（2.1–2.15）、2月下半月（2.16–2.28）。"},{"k":"统计口径","v":"销售额 = 单价 × 销量（自动计算）；月度合计 = 上下半月之和（自动计算）；环比 = 2月 ÷ 1月 − 1（自动计算，分母为空或 0 时留空）。"},{"k":"销量走势口径","v":"1月上半月：都市烤奶、有料烤奶、手炒黑糖珍珠红玉鲜奶茶领跑（单品单日峰值不超 30 杯，其余单品均低于这三款），半月收入约 6000 元；1 月中旬海报宣发后各单品全线上升，茉上花开成为爆款（单日峰值超 50 杯），半月收入接近 1 万元；2 月上旬春节后整体小幅回落至 9000 出头；2 月下旬进一步回落至约 8000 元，茉上花开维持在 2 月上旬水平。"},{"k":"背景事实","v":"该门店位于乡镇，此前没有用 Excel 统计销量的习惯和先例——这套统计方式为本人入职后首创，此后沿用。"},{"k":"新品口径","v":"茉上花开、丛声杏香、翠枝奶茉为同期上架新品；1 月中旬本人用 Pixso 制作宣传海报并打印，在学校等人流密集处宣发，宣发后新品销量明显上升。"},{"k":"面试用法","v":"如实讲述链条：门店两年无主动宣传 → 我提出做海报 → 宣发后新品起量 → 我首创了 Excel 销量统计。被问到数据出处时如实说明「原始账单已过保存期，凭现场记忆估算补录、店长认可」——诚实口径反而站得住。"},{"k":"红线","v":"填进去的每一个数都必须是你真实记得的大概范围；凭空编造的精确数字一旦被追问细节就会变成把柄。"}]
+};
+
+/* ---------- 2. 工具 ---------- */
+const $ = s => document.querySelector(s);
+const nf = (v, d = 0) => (v === null || v === undefined || isNaN(v)) ? '—'
+  : Number(v).toLocaleString('zh-CN', { minimumFractionDigits: d, maximumFractionDigits: d });
+const pct = v => (v === null || v === undefined || isNaN(v)) ? '—'
+  : (v >= 0 ? '+' : '') + (v * 100).toFixed(1) + '%';
+const cls = v => v === null || v === undefined ? 'num-flat' : (v > 0.0001 ? 'num-up' : (v < -0.0001 ? 'num-down' : 'num-flat'));
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
+const sum = a => a.reduce((x, y) => x + (y || 0), 0);
+const maxIdx = a => a.indexOf(Math.max.apply(null, a));
+const minIdx = a => a.indexOf(Math.min.apply(null, a));
+
+function categoryOf(r) {
+  const n = r.name;
+  if (r.type === '新品') return '新品系列';
+  if (/鲜奶茶/.test(n)) return '鲜奶茶';
+  if (/烤奶/.test(n)) return '烤奶';
+  if (/奶盖/.test(n)) return '奶盖茶';
+  if (/柠檬/.test(n)) return '柠檬茶饮';
+  if (/茗茶|绿茶|乌龙茶/.test(n)) return '纯茶';
+  if (/汁/.test(n)) return '果汁';
+  if (/仙草/.test(n)) return '烧仙草';
+  if (/杨枝甘露/.test(n)) return '甜品饮品';
+  if (/卡布奇诺|咖啡/.test(n)) return '咖啡';
+  if (/奶茶/.test(n)) return '奶茶';
+  return '其他';
+}
+
+/* ---------- 3. 建立模型 ---------- */
+function buildModel(seed) {
+  const rows = seed.map((r, i) => {
+    const q = (r.q || [0,0,0,0]).map(v => Number(v) || 0);
+    const amt = q.map(v => v * (Number(r.price) || 0));
+    const janQty = q[0] + q[1], febQty = q[2] + q[3];
+    const janAmt = amt[0] + amt[1], febAmt = amt[2] + amt[3];
+    return {
+      i: i, no: r.no, name: r.name, price: Number(r.price) || 0, type: r.type || '', note: r.note || '',
+      q: q, amt: amt, janQty: janQty, febQty: febQty, janAmt: janAmt, febAmt: febAmt,
+      mom: janQty ? (febQty - janQty) / janQty : null,
+      momAmt: janAmt ? (febAmt - janAmt) / janAmt : null,
+      cat: categoryOf(r)
+    };
+  });
+  const periodQty = [0,1,2,3].map(k => sum(rows.map(r => r.q[k])));
+  const periodAmt = [0,1,2,3].map(k => sum(rows.map(r => r.amt[k])));
+  const janAmt = periodAmt[0] + periodAmt[1], febAmt = periodAmt[2] + periodAmt[3];
+  const janQty = periodQty[0] + periodQty[1], febQty = periodQty[2] + periodQty[3];
+  return {
+    rows: rows,
+    periodQty: periodQty, periodAmt: periodAmt,
+    janQty: janQty, febQty: febQty, janAmt: janAmt, febAmt: febAmt,
+    totalQty: janQty + febQty, totalAmt: janAmt + febAmt,
+    peak: maxIdx(periodAmt), trough: minIdx(periodAmt),
+    momAmt: janAmt ? (febAmt - janAmt) / janAmt : null,
+    momQty: janQty ? (febQty - janQty) / janQty : null
+  };
+}
+
+let M = buildModel(SEED_ROWS);
+
+/* ---------- 4. 视图列定义 ---------- */
+function colDefs(view) {
+  const D = {
+    no:    { t:'序号', cls:'rowh', w:50, get:r => r.no },
+    name:  { t:'饮品名称', cls:'l name', get:r => r.name, cell:r => esc(r.name) },
+    price: { t:'单价', u:'元', get:r => r.price, fmt:v => nf(v, 0), cell:r => nf(r.price, 0) },
+    type:  { t:'类型', get:r => r.type, cell:r => '<span class="tag' + (r.type === '新品' ? ' n' : '') + '">' + esc(r.type) + '</span>' },
+    q0:    { t:'1月上半月', u:'1.1–1.15', get:r => r.q[0], cell:r => nf(r.q[0]) },
+    q1:    { t:'1月下半月', u:'1.16–1.31', get:r => r.q[1], cell:r => nf(r.q[1]) },
+    q2:    { t:'2月上半月', u:'2.1–2.15', get:r => r.q[2], cell:r => nf(r.q[2]) },
+    q3:    { t:'2月下半月', u:'2.16–2.28', get:r => r.q[3], cell:r => nf(r.q[3]) },
+    a0:    { t:'1月上半月', u:'销售额 元', get:r => r.amt[0], cell:r => nf(r.amt[0]) },
+    a1:    { t:'1月下半月', u:'销售额 元', get:r => r.amt[1], cell:r => nf(r.amt[1]) },
+    a2:    { t:'2月上半月', u:'销售额 元', get:r => r.amt[2], cell:r => nf(r.amt[2]) },
+    a3:    { t:'2月下半月', u:'销售额 元', get:r => r.amt[3], cell:r => nf(r.amt[3]) },
+    janQ:  { t:'1月合计', u:'杯', get:r => r.janQty, cell:r => nf(r.janQty) },
+    febQ:  { t:'2月合计', u:'杯', get:r => r.febQty, cell:r => nf(r.febQty) },
+    janA:  { t:'1月合计', u:'元', get:r => r.janAmt, cell:r => nf(r.janAmt) },
+    febA:  { t:'2月合计', u:'元', get:r => r.febAmt, cell:r => nf(r.febAmt) },
+    mom:   { t:'销量环比', get:r => r.mom, cell:r => '<span class="' + cls(r.mom) + '">' + pct(r.mom) + '</span>' },
+    momA:  { t:'销售额环比', get:r => r.momAmt, cell:r => '<span class="' + cls(r.momAmt) + '">' + pct(r.momAmt) + '</span>' },
+    cat:   { t:'品类', cls:'l', get:r => r.cat, cell:r => esc(r.cat) },
+    note:  { t:'备注', cls:'l', get:r => r.note, cell:r => esc(r.note) }
+  };
+  const V = {
+    qty:  ['no','name','price','type','q0','q1','q2','q3','janQ','febQ','mom','cat'],
+    amt:  ['no','name','price','type','a0','a1','a2','a3','janA','febA','momA','cat'],
+    full: ['no','name','price','type','q0','q1','q2','q3','a0','a1','a2','a3','janQ','febQ','janA','febA','mom','momA','note']
+  };
+  return (V[view] || V.qty).map(k => Object.assign({ key:k }, D[k]));
+}
+
+let VIEW = 'qty';
+let COLS = colDefs(VIEW);
+let SEL = null;   /* {r1,c1,r2,c2} 闭区间，值为行下标与列下标 */
+
+/* ---------- 5. 渲染表格 ---------- */
+const ROW_H = 34;
+
+function rowH(r) { return r.name.length > 9 ? 44 : ROW_H; }
+
+function renderTable() {
+  const head = $('#theadRow');
+  head.innerHTML = '<th class="corner rowh l" style="min-width:50px">#</th>' +
+    COLS.map((c, ci) => '<th class="' + (c.cls || '') + ' c' + ci + '">' + c.t +
+      (c.u ? '<span class="u">' + c.u + '</span>' : '') + '</th>').join('');
+
+  const tb = $('#tbody');
+  tb.innerHTML = M.rows.map((r, ri) => {
+    const tds = '<td class="rowh corner"></td>' + COLS.map((c, ci) => {
+      const raw = c.cell ? c.cell(r) : esc(c.get(r));
+      const zero = !c.cls && (c.get(r) === 0 || c.get(r) === null || c.get(r) === '');
+      return '<td class="' + (c.cls || '') + (zero ? ' zero' : '') + '" data-r="' + ri + '" data-c="' + ci + '"' +
+        (c.cls === 'rowh' ? '' : '') + '>' + raw + '</td>';
+    }).join('');
+    return '<tr data-r="' + ri + '" style="height:' + rowH(r) + 'px">' + tds + '</tr>';
+  }).join('');
+
+  const tf = $('#tfoot');
+  const foot = '<td class="rowh corner">Σ</td>' + COLS.map((c, ci) => {
+    if (c.key === 'no') return '<td class="rowh"></td>';
+    if (c.key === 'name') return '<td class="l">合计 / 汇总</td>';
+    if (c.key === 'price' || c.key === 'type' || c.key === 'cat' || c.key === 'note') return '<td class="c' + ci + '"></td>';
+    if (c.key === 'mom') return '<td class="c' + ci + '"><span class="' + cls(M.momQty) + '">' + pct(M.momQty) + '</span></td>';
+    if (c.key === 'momA') return '<td class="c' + ci + '"><span class="' + cls(M.momAmt) + '">' + pct(M.momAmt) + '</span></td>';
+    const vals = M.rows.map(r => c.get(r));
+    const numeric = vals.every(v => typeof v === 'number' || v === null);
+    if (!numeric) return '<td class="c' + ci + '"></td>';
+    const s = sum(vals);
+    return '<td class="c' + ci + '">' + nf(s, 0) + '</td>';
+  }).join('');
+  tf.innerHTML = '<tr class="foot-row">' + foot + '</tr>';
+
+  paintSel();
+}
+
+/* ---------- 6. 选区 ---------- */
+function cellEl(r, c) { return document.querySelector('td[data-r="' + r + '"][data-c="' + c + '"]'); }
+
+function normSel(s) {
+  if (!s) return null;
+  return {
+    r1: Math.min(s.r1, s.r2), r2: Math.max(s.r1, s.r2),
+    c1: Math.min(s.c1, s.c2), c2: Math.max(s.c1, s.c2)
+  };
+}
+
+function paintSel() {
+  document.querySelectorAll('td.sel').forEach(e => e.classList.remove('sel'));
+  const s = normSel(SEL);
+  if (!s) {
+    $('#selTxt').textContent = '未选中区域 · 可先「智能摘要」看全表结论';
+    $('#selKpis').innerHTML = '';
+    $('#btnRange').disabled = true; $('#btnClearSel').disabled = true;
+    document.querySelectorAll('thead th.sel').forEach(e => e.classList.remove('sel'));
+    return;
+  }
+  for (let r = s.r1; r <= s.r2; r++) {
+    for (let c = s.c1; c <= s.c2; c++) {
+      const el = cellEl(r, c);
+      if (el) el.classList.add('sel');
+    }
+  }
+  /* 列头高亮 */
+  document.querySelectorAll('thead th').forEach((th, idx) => {
+    th.classList.toggle('sel', idx >= s.c1 + 1 && idx <= s.c2 + 1);
+  });
+
+  /* 选区统计 */
+  const cells = collectSel(s);
+  const nums = cells.filter(x => x.num).map(x => x.value);
+  $('#selTxt').innerHTML = '已选 <b>' + (s.r2 - s.r1 + 1) + ' 行 × ' + (s.c2 - s.c1 + 1) + ' 列</b> · ' + cells.length + ' 个单元格';
+  if (nums.length) {
+    $('#selKpis').innerHTML =
+      '<span>求和 <b>' + nf(sum(nums)) + '</b></span>' +
+      '<span>均值 <b>' + nf(sum(nums) / nums.length, 1) + '</b></span>' +
+      '<span>最大 <b>' + nf(Math.max.apply(null, nums)) + '</b></span>' +
+      '<span>最小 <b>' + nf(Math.min.apply(null, nums)) + '</b></span>';
+  } else {
+    $('#selKpis').innerHTML = '<span>该区域没有数值列</span>';
+  }
+  $('#btnRange').disabled = false; $('#btnClearSel').disabled = false;
+}
+
+function collectSel(s) {
+  const out = [];
+  const seenRow = {}, seenCol = {};
+  for (let r = s.r1; r <= s.r2; r++) {
+    seenRow[r] = true;
+    for (let c = s.c1; c <= s.c2; c++) seenCol[c] = true;
+  }
+  for (let c = s.c1; c <= s.c2; c++) {
+    for (let r = s.r1; r <= s.r2; r++) {
+      const col = COLS[c], row = M.rows[r];
+      if (!col || !row) continue;
+      const v = col.get(row);
+      out.push({ r: r, c: c, row: row, col: col, label: col.t, value: v, num: typeof v === 'number' && !isNaN(v) });
+    }
+  }
+  return out;
+}
+
+/* 拖选 */
+let dragging = false, dragStart = null;
+const wrap = $('#tableWrap');
+
+wrap.addEventListener('mousedown', e => {
+  const td = e.target.closest('td');
+  const th = e.target.closest('th');
+  if (th && !th.classList.contains('corner')) {
+    /* 点列头 → 选整列 */
+    const idx = Array.prototype.indexOf.call(th.parentNode.children, th);
+    if (idx > 0) { SEL = { r1: 0, r2: M.rows.length - 1, c1: idx - 1, c2: idx - 1 }; paintSel(); }
+    e.preventDefault(); return;
+  }
+  if (!td || td.classList.contains('corner')) return;
+  const r = +td.dataset.r, c = +td.dataset.c;
+  if (!(c >= 0)) return;
+  if (c === 0) { /* 行号列 → 选整行 */
+    SEL = { r1: r, r2: r, c1: 0, c2: COLS.length - 1 }; paintSel(); e.preventDefault(); return;
+  }
+  if (e.shiftKey && SEL) {
+    SEL = { r1: SEL.r1, c1: SEL.c1, r2: r, c2: c };
+  } else {
+    dragging = true; dragStart = { r: r, c: c }; SEL = { r1: r, r2: r, c1: c, c2: c };
+  }
+  paintSel();
+  e.preventDefault();
+});
+
+wrap.addEventListener('mousemove', e => {
+  if (!dragging || !dragStart) return;
+  const td = e.target.closest('td');
+  if (!td || td.classList.contains('corner')) return;
+  const r = +td.dataset.r, c = +td.dataset.c;
+  if (!(c >= 0) || !(r >= 0)) return;
+  if (r === SEL.r2 && c === SEL.c2) return;
+  SEL = { r1: dragStart.r, c1: Math.max(1, dragStart.c === 0 ? 1 : dragStart.c), r2: r, c2: Math.max(1, c) };
+  paintSel();
+});
+
+document.addEventListener('mouseup', () => { dragging = false; dragStart = null; });
+
+$('#btnClearSel').onclick = () => { SEL = null; paintSel(); };
+
+/* 列头点击整列时同步高亮行头 */
+wrap.addEventListener('click', e => {
+  const th = e.target.closest('th');
+  if (th && !th.classList.contains('corner')) {
+    const idx = Array.prototype.indexOf.call(th.parentNode.children, th);
+    if (idx > 0) { SEL = { r1: 0, r2: M.rows.length - 1, c1: idx - 1, c2: idx - 1 }; paintSel(); }
+  }
+});
+
+/* ---------- 7. 分析引擎 ---------- */
+function periodName(k) { return META.periods[k].label; }
+
+/* 7.1 全表智能摘要 */
+function summary() {
+  const R = M.rows;
+  const byAmt2 = R.slice().sort((a, b) => b.febAmt - a.febAmt);
+  const byAmt1 = R.slice().sort((a, b) => b.janAmt - a.janAmt);
+  const top5 = byAmt2.slice(0, 5);
+  const top5Amt = sum(top5.map(r => r.febAmt));
+  const share5 = M.febAmt ? top5Amt / M.febAmt : 0;
+  const grow = R.filter(r => r.mom !== null && r.mom > 0.001).sort((a, b) => b.mom - a.mom);
+  const drop = R.filter(r => r.mom !== null && r.mom < -0.001).sort((a, b) => a.mom - b.mom);
+  const flat = R.filter(r => r.mom !== null && Math.abs(r.mom) <= 0.001);
+
+  /* 头部单品的贡献集中度：扣除 Top1 后其余合计环比 */
+  const top1 = byAmt2[0];
+  const restFebAmt = M.febAmt - top1.febAmt;
+  const restJanAmt = M.janAmt - top1.janAmt;
+  const restMom = restJanAmt ? (restFebAmt - restJanAmt) / restJanAmt : null;
+  const top1Share = M.febAmt ? top1.febAmt / M.febAmt : 0;
+
+  const newProd = R.filter(r => r.type === '新品');
+  const newFeb = sum(newProd.map(r => r.febAmt)), newJan = sum(newProd.map(r => r.janAmt));
+  const newShare = M.febAmt ? newFeb / M.febAmt : 0;
+  const newMom = newJan ? (newFeb - newJan) / newJan : null;
+
+  /* 品类聚合（2 月） */
+  const catMap = {};
+  R.forEach(r => {
+    catMap[r.cat] = catMap[r.cat] || { cat: r.cat, n: 0, febAmt: 0, janAmt: 0, febQty: 0 };
+    catMap[r.cat].n++;
+    catMap[r.cat].febAmt += r.febAmt;
+    catMap[r.cat].janAmt += r.janAmt;
+    catMap[r.cat].febQty += r.febQty;
+  });
+  const cats = Object.keys(catMap).map(k => catMap[k]).map(c => Object.assign(c, {
+    momAmt: c.janAmt ? (c.febAmt - c.janAmt) / c.janAmt : null,
+    share: M.febAmt ? c.febAmt / M.febAmt : 0
+  })).sort((a, b) => b.febAmt - a.febAmt);
+
+  const catUp = cats.filter(c => c.momAmt !== null && c.momAmt > 0.001).sort((a, b) => b.momAmt - a.momAmt);
+  const catDown = cats.filter(c => c.momAmt !== null && c.momAmt < -0.001).sort((a, b) => a.momAmt - b.momAmt);
+
+  /* 价格带 */
+  const bands = [
+    { name:'4–5 元', test:p => p <= 5 },
+    { name:'7–8 元', test:p => p >= 6 && p <= 8 },
+    { name:'9–12 元', test:p => p >= 9 }
+  ].map(b => {
+    const g = R.filter(r => b.test(r.price));
+    const feb = sum(g.map(r => r.febAmt)), jan = sum(g.map(r => r.janAmt));
+    return { name: b.name, n: g.length, feb: feb, jan: jan, share: M.febAmt ? feb / M.febAmt : 0,
+             mom: jan ? (feb - jan) / jan : null, febQty: sum(g.map(r => r.febQty)) };
+  });
+
+  /* 半月规律 */
+  const h1 = M.periodAmt[0], h2 = M.periodAmt[1], h3 = M.periodAmt[2], h4 = M.periodAmt[3];
+  const janIn = (h2 - h1) / h1, febIn = (h4 - h3) / h3;
+
+  /* 归零/停售风险：2月合计极低 */
+  const faint = R.filter(r => r.febQty > 0 && r.febQty <= 12).sort((a, b) => a.febQty - b.febQty);
+
+  return {
+    top5, share5, top1, top1Share, restMom, restFebAmt, restJanAmt,
+    grow, drop, flat, newProd, newFeb, newJan, newShare, newMom,
+    cats, catUp, catDown, bands, janIn, febIn, faint,
+    byAmt1, byAmt2
+  };
+}
+
+/* 7.2 渲染：摘要 */
+function renderSummary() {
+  const S = summary();
+  const R = M.rows;
+  const b = [];
+
+  /* 一句话结论 */
+  b.push('<div class="block"><h3>一句话结论</h3><div class="lead">' +
+    '两个月共卖出 <b class="kbd">' + nf(M.totalQty) + '</b> 杯、收入 <b class="kbd">¥' + nf(M.totalAmt) + '</b>；' +
+    '2 月 ¥' + nf(M.febAmt) + '，比 1 月' + (M.momAmt >= 0 ? '增长' : '下降') + ' <b class="kbd">' + pct(Math.abs(M.momAmt)) + '</b>，' +
+    '看起来在涨。但涨幅几乎全部来自一款单品——<b>' + esc(S.top1.name) + '</b> 2 月卖了 ' + nf(S.top1.febQty) + ' 杯、' +
+    '贡献 ¥' + nf(S.top1.febAmt) + '，占全店 2 月收入的 <b class="kbd">' + (S.top1Share * 100).toFixed(1) + '%</b>。' +
+    '把它拿掉，其余 ' + (R.length - 1) + ' 款合计环比 <b class="kbd">' + pct(S.restMom) + '</b>——' +
+    '<b>全店是在靠一款爆款撑住大盘。</b>' +
+    '</div></div>');
+
+  /* KPI */
+  const peakTxt = periodName(M.peak) + '（¥' + nf(M.periodAmt[M.peak]) + '）';
+  b.push('<div class="block"><h3>关键指标</h3><div class="kpis">' +
+    kpi('两个月总收入', '¥' + nf(M.totalAmt), '销量 ' + nf(M.totalQty) + ' 杯 · 客单均价 ¥' + (M.totalAmt / M.totalQty).toFixed(1)) +
+    kpi('2 月环比', pct(M.momAmt), '销量环比 ' + pct(M.momQty), M.momAmt) +
+    kpi('收入最高期', periodName(M.peak), '¥' + nf(M.periodAmt[M.peak]) + ' · 最低 ' + periodName(M.trough) + ' ¥' + nf(M.periodAmt[M.trough]), null) +
+    kpi('在售数量', R.length + ' 款', '其中新品 ' + S.newProd.length + ' 款', null) +
+    '</div></div>');
+
+  /* 洞察 */
+  const ins = [];
+  /* 1 爆款 */
+  ins.push(card('up', '增长引擎', [
+    { t:'单款撑起大盘', l:esc(S.top1.name) },
+    { t:'2 月占比', l:(S.top1Share * 100).toFixed(1) + '%' }
+  ], '《' + esc(S.top1.name) + '》从 1 月 <em>' + nf(S.top1.janQty) + '</em> 杯涨到 2 月 <em>' + nf(S.top1.febQty) +
+    '</em> 杯，环比 <em class="up">' + pct(S.top1.mom) + '</em>；销售额 ¥' + nf(S.top1.janAmt) + ' → ¥' + nf(S.top1.febAmt) +
+    '，环比 <em class="up">' + pct(S.top1.momAmt) + '</em>。它的增长来自 1 月中旬的海报宣发，<b>属于可复制的动作</b>——一次宣传就把它推成了店里第一款单日峰值破 50 杯的产品。',
+    'up'));
+
+  if (S.grow.length > 1) {
+    const others = S.grow.filter(r => r.i !== S.top1.i).slice(0, 3);
+    ins.push(card('up', '同步增长', others.map(r => ({ t:r.name, l:pct(r.mom) })), 
+      '除爆款外还有 <em>' + S.grow.length + '</em> 款实现正增长：' +
+      others.map(r => '《' + esc(r.name) + '》<em class="up">' + pct(r.mom) + '</em>').join('、') +
+      '。增长面窄、幅度小，说明宣发的红利主要被新品吃掉了。', 'up'));
+  }
+
+  ins.push(card('down', '下滑面', S.drop.slice(0, 4).map(r => ({ t:r.name, l:pct(r.mom) })),
+    '有 <em>' + S.drop.length + '</em> 款环比下滑（占在售 ' + (S.drop.length / R.length * 100).toFixed(0) + '%），' +
+    '最严重的是 ' + S.drop.slice(0, 3).map(r => '《' + esc(r.name) + '》<em class="down">' + pct(r.mom) + '</em>').join('、') +
+    '。下跌集中在 2 月下半月，与春节后返乡、人流下降的时间点吻合，<b>属于季节性回落而非单品问题</b>。',
+    'down'));
+
+  const newCard = card('info', '新品表现', [
+    { t:'新品 2 月收入', l:'¥' + nf(S.newFeb) },
+    { t:'占全店', l:(S.newShare * 100).toFixed(1) + '%' },
+    { t:'环比', l:pct(S.newMom) }
+  ], '3 款新品合计环比 <em class="' + (S.newMom >= 0 ? 'up' : 'down') + '">' + pct(S.newMom) + '</em>，2 月贡献全店 <em>' +
+    (S.newShare * 100).toFixed(1) + '%</em> 的收入。但结构极度不均：' + esc(S.top1.name) + ' 一款就占了新品的 ' +
+    (S.top1.febAmt / S.newFeb * 100).toFixed(0) + '%，另外两款基本横盘——<b>新品策略成立，但命中率靠一款撑着</b>。', 'info');
+  ins.push(newCard);
+
+  /* 集中度 */
+  ins.push(card('warn', '收入集中度', [
+    { t:'Top5 占 2 月', l:(S.share5 * 100).toFixed(1) + '%' },
+    { t:'Top1 占', l:(S.top1Share * 100).toFixed(1) + '%' }
+  ], '2 月收入前 5 名合计 ¥' + nf(sum(S.top5.map(r => r.febAmt))) + '，占全店 <em>' + (S.share5 * 100).toFixed(1) +
+    '%</em>。头部集中说明主推位有效，但也意味着<b>一旦爆款断料或降温，全店收入会直接掉一块</b>——这是当前最大的单点风险。', 'warn'));
+
+  /* 价格带 */
+  const bandTop = S.bands.slice().sort((a, b2) => b2.share - a.share)[0];
+  const bandWorst = S.bands.slice().sort((a, b2) => (a.mom === null ? 9 : a.mom) - (b2.mom === null ? 9 : b2.mom))[0];
+  ins.push(card('info', '价格带', S.bands.map(x => ({ t:x.name, l:(x.share * 100).toFixed(0) + '% · ' + pct(x.mom) })),
+    '收入主力在 <em>' + bandTop.name + '</em> 档，贡献 <em>' + (bandTop.share * 100).toFixed(1) + '%</em> 的收入；' +
+    '跌幅最大的是 <em>' + bandWorst.name + '</em> 档（环比 <em class="' + (bandWorst.mom >= 0 ? 'up' : 'down') + '">' + pct(bandWorst.mom) +
+    '</em>）。4–5 元的纯茶档销量大但客单低，9 元以上档位靠奶盖茶与杨枝甘露支撑。', 'info'));
+
+  /* 品类 */
+  if (S.catDown.length) {
+    const cd = S.catDown[0];
+    ins.push(card('down', '品类视角', S.cats.slice(0, 5).map(c => ({ t:c.cat, l:(c.share * 100).toFixed(0) + '%' })),
+      '按品类看，<em>' + S.cats[0].cat + '</em> 是收入第一（' + (S.cats[0].share * 100).toFixed(1) + '%）；' +
+      '环比最弱的是 <em>' + cd.cat + '</em>（<em class="down">' + pct(cd.momAmt) + '</em>，2 月 ¥' + nf(cd.febAmt) + '）。' +
+      '下滑最大的品类里包含多款同质化产品，是<b>最该做减法的地方</b>。', 'down'));
+  }
+
+  /* 半月规律 */
+  ins.push(card('info', '周期规律', [
+    { t:'1月下 vs 1月上', l:pct(S.janIn) },
+    { t:'2月下 vs 2月上', l:pct(S.febIn) }
+  ], '1 月下半月比上半月收入 <em class="up">' + pct(S.janIn) + '</em>（宣发起效）；2 月下半月比上半月 <em class="down">' +
+    pct(S.febIn) + '</em>（春节后回落）。<b>月度数据的波动主要发生在“下半月”，排班与备货应按半月调整而不是按整月。</b>', 'info'));
+
+  b.push('<div class="block"><h3>数据洞察（' + ins.length + '）</h3>' + ins.join('') + '</div>');
+
+  /* 建议 */
+  const acts = [];
+
+  /* ① 爆款保供 */
+  const dailyFeb2 = S.top1.q[3] / 15;
+  acts.push(a('把《' + esc(S.top1.name) + '》当核心单品来保',
+    '按 2 月下半月（' + nf(S.top1.q[3]) + ' 杯 / 15 天）折算，日均约 <b>' + dailyFeb2.toFixed(1) + ' 杯</b>，建议按 <b>' +
+    (dailyFeb2 * 30).toFixed(0) + ' 杯/月</b> 备原料并预留 15% 安全库存；把它固定在菜单第一屏主推位，避免它出现断料。',
+    '它一款占 2 月收入 ' + (S.top1Share * 100).toFixed(1) + '%，断料一天的损失约 ¥' + (dailyFeb2 * S.top1.price).toFixed(0) + '。'));
+
+  /* ② 复刻宣发动作 */
+  acts.push(a('把 1 月海报宣发的有效动作固化下来',
+    '1 月中旬的 Pixso 海报 + 学校人流点宣发，直接带来 1 月下半月收入 <b>' + pct(S.janIn) + '</b> 的跃升。建议每 30–45 天做一次主题海报（换季、新品、节日各一次），并把「宣发后 4 天起量」作为复盘节点。',
+    '已验证有效的杠杆，重复使用的边际成本最低。'));
+
+  /* ③ 缩减小众 */
+  const fb = S.faint.slice(0, 4);
+  if (fb.length) {
+    acts.push(a('对低量单品做减配或替换',
+      '2 月合计不足 12 杯的有 ' + fb.map(r => '《' + esc(r.name) + '》(' + nf(r.febQty) + '杯)').join('、') +
+      ' 等 <b>' + S.faint.length + ' 款</b>。建议保留配方但不再备全量原料，或直接下架，把位置与人力让给高量单品。',
+      '低量单品的原料周转与操作时间占用，性价比明显低于头部产品。'));
+  }
+
+  /* ④ 价格带/组合 */
+  acts.push(a('用组合套餐拉高 4–5 元档的客单',
+    S.bands.map(x => x.name + ' 占 ' + (x.share * 100).toFixed(0) + '%').join(' · ') +
+    '。纯茶档销量大、客单低，建议做「纯茶 + 芋圆/珍珠」加料组合或第二杯半价，把 4 元档的流量导到 7 元以上。',
+    '中高价格带（' + S.bands[2].name + '）环比 ' + pct(S.bands[2].mom) + '，是收入弹性的主要来源。'));
+
+  /* ⑤ 下滑面 */
+  const d3 = S.drop.slice(0, 3);
+  if (d3.length) {
+    acts.push(a('对下滑集中品类做一次小范围测试',
+      '《' + d3.map(r => esc(r.name)).join('》《') + '》环比跌幅最大。建议先不做大动作，用两周时间试点：调整陈列位置 / 换杯型 / 做一次搭配推荐，观察是否有回升再决定去留。',
+      '跌幅有季节性因素，先排除产品本身问题，避免误杀。'));
+  }
+
+  /* ⑥ 数据治理 */
+  acts.push(a('把统计口径升级为系统记录',
+    '当前数据为在职期间凭现场记忆估算补录（原始账单已过保存期）。要让它变成可长期复用的资产，建议改成每日闭店时用表格记录一次销量，一个月后就能得到精确的环比与趋势。',
+    '口径如实、数据真实，是这份材料能被追问而不塌的前提。'));
+
+  b.push('<div class="block"><h3>行动建议（' + acts.length + '）</h3><ol class="acts">' + acts.join('') + '</ol></div>');
+
+  /* 排行榜 */
+  b.push('<div class="block"><h3>2 月收入排行（Top 10）</h3>' + rankTable(S.byAmt2.slice(0, 10), S.byAmt2[0].febAmt) + '</div>');
+
+  /* 口径 */
+  b.push('<div class="block"><h3>数据口径与红线</h3>' +
+    '<ul class="note-list">' + META.notes.map(n =>
+      '<li' + (/红线|口径|来源/.test(n.k) ? ' class="hot"' : '') + '><b>' + esc(n.k) + '</b>：' + esc(n.v) + '</li>').join('') +
+    '</ul></div>');
+
+  return b.join('');
+}
+
+function kpi(k, v, n, tone) {
+  const c = tone === null || tone === undefined ? '' : (tone > 0.0001 ? 'up' : (tone < -0.0001 ? 'down' : ''));
+  return '<div class="kpi"><div class="k">' + k + '</div><div class="v">' + v + '</div>' +
+    '<div class="n ' + c + '">' + (n || '') + '</div></div>';
+}
+
+function card(tone, title, ev, body, t2) {
+  const toneCls = tone === 'up' ? 't-up' : (tone === 'down' ? 't-down' : (tone === 'warn' ? 't-warn' : ''));
+  const evs = (ev || []).map(e => '<li>' + e.t + ' ' + e.l + '</li>').join('');
+  return '<div class="card ' + toneCls + '">' +
+    '<h4 class="ct">' + title + (t2 && t2 !== tone ? '' : '') + '</h4>' +
+    '<div class="cb">' + body + '</div>' +
+    (evs ? '<ul class="ev">' + evs + '</ul>' : '') + '</div>';
+}
+
+function a(title, body, why) {
+  return '<li><b>' + title + '</b><br>' + body + (why ? '<span class="why">依据：' + why + '</span>' : '') + '</li>';
+}
+
+function rankTable(rows, maxV) {
+  return '<table class="ranks"><thead><tr><th>饮品</th><th>2月销量</th><th>2月收入</th><th>环比</th><th>占比</th></tr></thead><tbody>' +
+    rows.map(r => '<tr><td>' + esc(r.name) + (r.type === '新品' ? ' <span class="tag n">新品</span>' : '') + '</td>' +
+      '<td>' + nf(r.febQty) + '</td><td>¥' + nf(r.febAmt) + '</td>' +
+      '<td class="' + cls(r.mom) + '">' + pct(r.mom) + '</td>' +
+      '<td><div class="bar"><i style="width:' + Math.max(3, r.febAmt / maxV * 100).toFixed(1) + '%"></i></div></td></tr>').join('') +
+    '</tbody></table>';
+}
+
+/* 7.3 选区分析 */
+function renderRange() {
+  const s = normSel(SEL);
+  if (!s) return '';
+  const cells = collectSel(s);
+  const rowIdx = [];
+  for (let r = s.r1; r <= s.r2; r++) rowIdx.push(r);
+  const rows = rowIdx.map(i => M.rows[i]);
+  const cols = [];
+  for (let c = s.c1; c <= s.c2; c++) cols.push(COLS[c]);
+
+  const numericCols = cols.filter(c => rows.every(r => typeof c.get(r) === 'number'));
+  const isSalesCol = c => /^q\d$/.test(c.key);
+  const isAmtCol = c => /^a\d$/.test(c.key) || /^janA$|^febA$/.test(c.key);
+  const hasMultiPeriod = cols.filter(isSalesCol).length >= 2;
+  const isMultiRow = rows.length >= 2;
+
+  const b = [];
+  const rangeName = '第 ' + (s.r1 + 1) + '–' + (s.r2 + 1) + ' 行 × ' + (s.c1 + 1) + '–' + (s.c2 + 1) + ' 列';
+
+  b.push('<div class="block"><h3>选中区域</h3><div class="lead">' +
+    '你框选的是 <b>' + rangeName + '</b>，共 <b class="kbd">' + rows.length + '</b> 行 × <b class="kbd">' + cols.length + '</b> 列' +
+    '（' + cells.length + ' 个单元格），包含 ' + rows.length + ' 款饮品：<b>' +
+    esc(rows.slice(0, 6).map(r => r.name).join('、')) + (rows.length > 6 ? ' 等' : '') + '</b>。' +
+    '</div></div>');
+
+  const nums = cells.filter(x => x.num).map(x => x.value);
+  if (nums.length) {
+    b.push('<div class="block"><h3>区域统计</h3><div class="kpis">' +
+      kpi('求和', nf(sum(nums)), '共 ' + nums.length + ' 个数值') +
+      kpi('均值', nf(sum(nums) / nums.length, 1), '最大 ' + nf(Math.max.apply(null, nums)) + ' / 最小 ' + nf(Math.min.apply(null, nums))) +
+      '</div></div>');
+  }
+
+  const ins = [], acts = [];
+
+  /* 按行（多款饮品）× 多期 → 走势对比 */
+  if (isMultiRow && hasMultiPeriod) {
+    const pcols = cols.filter(isSalesCol).sort((a, b2) => a.key < b2.key ? -1 : 1);
+    const totals = pcols.map(c => sum(rows.map(r => c.get(r))));
+    const first = totals[0], last = totals[totals.length - 1];
+    const chg = first ? (last - first) / first : null;
+    const peak = pcols[maxIdx(totals)], trough = pcols[minIdx(totals)];
+
+    /* 每款的行内趋势 */
+    const perRow = rows.map(r => {
+      const v = pcols.map(c => c.get(r));
+      const a0 = v[0], a1 = v[v.length - 1];
+      return { r: r, v: v, chg: a0 ? (a1 - a0) / a0 : null, sum: sum(v) };
+    }).sort((x, y) => y.sum - x.sum);
+
+    ins.push(card(chg >= 0 ? 'up' : 'down', '整体走势', pcols.map((c, i) => ({ t:c.t, l:nf(totals[i]) })),
+      '框选范围内合计从 ' + esc(pcols[0].t) + ' 的 <em>' + nf(first) + '</em> 走到 ' + esc(pcols[pcols.length - 1].t) +
+      ' 的 <em>' + nf(last) + '</em>，整体' + (chg >= 0 ? '上升' : '下降') + ' <em class="' + (chg >= 0 ? 'up' : 'down') + '">' + pct(chg) +
+      '</em>；峰值在 <em>' + esc(peak.t) + '</em>（' + nf(totals[maxIdx(totals)]) + '），谷值在 <em>' + esc(trough.t) + '</em>（' + nf(totals[minIdx(totals)]) + '）。',
+      chg >= 0 ? 'up' : 'down'));
+
+    ins.push(card('info', '谁在涨、谁在跌',
+      perRow.slice(0, 4).map(x => ({ t: x.r.name, l: (x.chg >= 0 ? '+' : '') + nf(x.v[x.v.length - 1] - x.v[0]) + ' 杯 · ' + pct(x.chg) })),
+      perRow.slice(0, 3).map(x => '《' + esc(x.r.name) + '》从 <em>' + nf(x.v[0]) + '</em> 杯走到 <em>' + nf(x.v[x.v.length - 1]) + '</em> 杯' +
+        '（' + (x.chg >= 0 ? '净增' : '净减') + ' <em class="' + (x.chg >= 0 ? 'up' : 'down') + '">' + nf(Math.abs(x.v[x.v.length - 1] - x.v[0])) + '</em> 杯，合计 ' + nf(x.sum) + ' 杯）').join('；') +
+      '。' + (perRow[perRow.length - 1].chg < -0.05
+        ? '其中《' + esc(perRow[perRow.length - 1].r.name) + '》末段比首段少了 <em class="down">' + nf(Math.abs(perRow[perRow.length - 1].v[perRow[perRow.length - 1].v.length - 1] - perRow[perRow.length - 1].v[0])) + '</em> 杯，值得单独看一下。'
+        : '框选范围内没有出现异常崩塌的单品。'), 'info'));
+
+    /* 建议 */
+    const best = perRow[0];
+    acts.push(a('主推《' + esc(best.r.name) + '》',
+      '在你选中的范围内它贡献最高（' + nf(best.sum) + ' 杯，销售额约 ¥' + nf(best.sum * best.r.price) +
+      '）。建议把它放在主推位，并按峰值期（' + esc(peak.t) + '）的量备料。',
+      '选中范围内销量与走势双优。'));
+    if (perRow[perRow.length - 1].chg < -0.05) {
+      const w = perRow[perRow.length - 1];
+      acts.push(a('观察或替换《' + esc(w.r.name) + '》',
+        '区间内它从 ' + nf(w.v[0]) + ' 降到 ' + nf(w.v[w.v.length - 1]) + '（<em class="down">' + pct(w.chg) + '</em>），累计仅 ' + nf(w.sum) +
+        ' 杯。建议先缩减备料测试两周，若无回升再考虑下架。',
+        '在所选范围内跌幅最大且总量偏低。'));
+    }
+  }
+
+  /* 单期多行 → 排行 */
+  const singlePeriod = cols.length === 1 && isMultiRow && typeof cols[0].get(rows[0]) === 'number';
+  if (singlePeriod) {
+    const c = cols[0];
+    const list = rows.map(r => ({ r: r, v: c.get(r) })).sort((x, y) => y.v - x.v);
+    const tot = sum(list.map(x => x.v));
+    ins.push(card('info', '单列排行', list.slice(0, 4).map(x => ({ t:x.r.name, l:nf(x.v) })),
+      '这一列（' + esc(c.t) + '）合计 <em>' + nf(tot) + '</em>，最高是《' + esc(list[0].r.name) + '》<em>' + nf(list[0].v) +
+      '</em>，最低是《' + esc(list[list.length - 1].r.name) + '》<em>' + nf(list[list.length - 1].v) + '</em>。' +
+      '第一名占该列 <em>' + (tot ? (list[0].v / tot * 100).toFixed(1) : '0') + '%</em>。', 'info'));
+    acts.push(a('按这列的高低重排货架与备料',
+      '把前 3 名（' + list.slice(0, 3).map(x => esc(x.r.name)).join('、') + '）放在动线前端，后 3 名缩减备量。',
+      '单列数据直接反映顾客选择。'));
+  }
+
+  /* 单款多期 → 走势 */
+  const singleRow = rows.length === 1;
+  if (singleRow && cols.length >= 2) {
+    const r = rows[0];
+    const v = cols.map(c => ({ t:c.t, v:c.get(r) })).filter(x => typeof x.v === 'number');
+    const first = v[0].v, last = v[v.length - 1].v;
+    const chg = first ? (last - first) / first : null;
+    const vals = v.map(x => x.v);
+    const mean = sum(vals) / vals.length;
+    const variance = sum(vals.map(x => Math.pow(x - mean, 2))) / vals.length;
+    const cv = mean ? Math.sqrt(variance) / mean : 0;
+    ins.push(card(chg >= 0 ? 'up' : 'down', '单品走势 · ' + esc(r.name),
+      v.map(x => ({ t:x.t, l:nf(x.v) })),
+      '《' + esc(r.name) + '》在选中区间内从 <em>' + nf(first) + '</em> 走到 <em>' + nf(last) + '</em>（<em class="' +
+      (chg >= 0 ? 'up' : 'down') + '">' + pct(chg) + '</em>），均值 <em>' + nf(mean, 1) + '</em>，波动系数 <em>' +
+      (cv * 100).toFixed(0) + '%</em>——' + (cv > 0.3 ? '波动偏大，可能受宣发或节日影响明显' : '走势相对稳定，属于可预测的日常款') +
+      '。单价 ¥' + nf(r.price) + '，选中区间销售额约 ¥' + nf(sum(vals) * r.price) + '。',
+      chg >= 0 ? 'up' : 'down'));
+    acts.push(a(cv > 0.3 ? '抓住它的波动窗口' : '把它作为稳定基本盘',
+      cv > 0.3
+        ? '它在峰值期（' + esc(v[maxIdx(vals)].t) + '，' + nf(vals[maxIdx(vals)]) + ' 杯）有明显放量，建议在同类活动期把它放进主推组合。'
+        : '波动小意味着需求可预测，适合做每日固定备量，也适合作为套餐的引流款。',
+      '按选中区间数据计算。'));
+  }
+
+  b.push('<div class="block"><h3>分析结论</h3>' + (ins.length ? ins.join('') :
+    '<div class="card"><div class="cb">当前选区不包含足够的数值或维度来做走势判断。建议：<br>① 竖着选多列（跨不同周期）看走势；② 横着选多行（多款饮品）看排行；③ 整个框选一行 + 多列，看单品趋势。</div></div>') + '</div>');
+
+  if (acts.length) b.push('<div class="block"><h3>针对这块数据的建议</h3><ol class="acts">' + acts.join('') + '</ol></div>');
+
+  /* 选中数据明细 */
+  b.push('<div class="block"><h3>选中数据</h3>' + selTable(s, rows, cols) + '</div>');
+
+  return b.join('');
+}
+
+function selTable(s, rows, cols) {
+  return '<table class="ranks"><thead><tr><th>饮品</th>' +
+    cols.filter(c => c.key !== 'no').map(c => '<th>' + c.t + '</th>').join('') + '</tr></thead><tbody>' +
+    rows.map(r => '<tr><td>' + esc(r.name) + '</td>' +
+      cols.filter(c => c.key !== 'no').map(c => {
+        const v = c.get(r);
+        return '<td class="' + (typeof v === 'number' && (c.key === 'mom' || c.key === 'momA') ? cls(v) : '') + '">' +
+          (c.key === 'mom' || c.key === 'momA' ? pct(v) : (typeof v === 'number' ? nf(v) : esc(v))) + '</td>';
+      }).join('') + '</tr>').join('') +
+    '</tbody></table>';
+}
+
+/* 7.4 分类分析（快速问题） */
+function renderTopic(q) {
+  const S = summary(), R = M.rows;
+  const b = [];
+  const key = q;
+
+  if (/主推|爆款|最好|最强|增长/.test(key)) {
+    b.push('<div class="block"><h3>该主推哪款</h3><div class="lead">' +
+      '答案很明确：<b>' + esc(S.top1.name) + '</b>。它是唯一一款“高基数 + 高增长”的单品——2 月 ' + nf(S.top1.febQty) +
+      ' 杯（占全店销量 ' + (S.top1.febQty / M.febQty * 100).toFixed(1) + '%）、收入 ¥' + nf(S.top1.febAmt) +
+      '（占 ' + (S.top1Share * 100).toFixed(1) + '%），环比 <b>' + pct(S.top1.mom) + '</b>。' +
+      (S.grow.length > 1 ? '次选是 ' + S.grow.filter(r => r.i !== S.top1.i).slice(0, 2).map(r => '《' + esc(r.name) + '》(' + pct(r.mom) + ')').join('、') + '。' : '') +
+      '</div></div>' +
+      '<div class="block"><h3>2 月收入排行</h3>' + rankTable(S.byAmt2.slice(0, 10), S.byAmt2[0].febAmt) + '</div>');
+    return b.join('');
+  }
+
+  if (/下滑|掉|最差|最弱|降/.test(key)) {
+    const d = S.drop.slice(0, 10);
+    b.push('<div class="block"><h3>下滑最多的</h3><div class="lead">' +
+      '2 月环比下滑的有 <b>' + S.drop.length + '</b> 款（占在售 ' + (S.drop.length / R.length * 100).toFixed(0) + '%）。跌幅前三：<b>' +
+      d.slice(0, 3).map(r => esc(r.name) + '（' + pct(r.mom) + '，' + nf(r.janQty) + '→' + nf(r.febQty) + ' 杯）').join('</b>、<b>') +
+      '</b>。</div></div>');
+    b.push('<div class="block"><h3>跌幅排行</h3><table class="ranks"><thead><tr><th>饮品</th><th>1月</th><th>2月</th><th>环比</th><th>品类</th></tr></thead><tbody>' +
+      d.map(r => '<tr><td>' + esc(r.name) + '</td><td>' + nf(r.janQty) + '</td><td>' + nf(r.febQty) + '</td>' +
+        '<td class="num-down">' + pct(r.mom) + '</td><td>' + esc(r.cat) + '</td></tr>').join('') + '</tbody></table></div>');
+    const cd = S.catDown[0];
+    b.push('<div class="block"><h3>怎么理解</h3><div class="card t-down"><div class="cb">' +
+      '下滑面 <em>' + S.drop.length + '</em> 款、上涨面仅 <em>' + S.grow.length + '</em> 款，说明 2 月的增长是<b>单点突破而非全面回暖</b>。' +
+      '跌得最狠的品类是 <em>' + cd.cat + '</em>（环比 <em class="down">' + pct(cd.momAmt) + '</em>）。' +
+      '结合半月数据看，跌幅主要发生在 2 月下半月（<em class="down">' + pct(S.febIn) + '</em>），与时点（春节后返乡）强相关，' +
+      '<b>不宜直接判定这些产品不行</b>——真正的判断依据应该是“3 月是否回到 1 月水平”。</div></div></div>');
+    return b.join('');
+  }
+
+  if (/新品/.test(key)) {
+    const np = S.newProd;
+    b.push('<div class="block"><h3>新品表现</h3><div class="lead">' +
+      '3 款新品 2 月合计收入 <b>¥' + nf(S.newFeb) + '</b>，占全店 <b>' + (S.newShare * 100).toFixed(1) + '%</b>，环比 <b>' + pct(S.newMom) + '</b>。' +
+      '但结构极度不均：' + esc(S.top1.name) + ' 一款占了新品收入的 <b>' + (S.top1.febAmt / S.newFeb * 100).toFixed(0) + '%</b>。' +
+      '</div></div>');
+    b.push('<div class="block"><h3>三款新品对照</h3><table class="ranks"><thead><tr><th>饮品</th><th>1月</th><th>2月</th><th>环比</th><th>2月收入</th></tr></thead><tbody>' +
+      np.map(r => '<tr><td>' + esc(r.name) + '</td><td>' + nf(r.janQty) + '</td><td>' + nf(r.febQty) + '</td>' +
+        '<td class="' + cls(r.mom) + '">' + pct(r.mom) + '</td><td>¥' + nf(r.febAmt) + '</td></tr>').join('') +
+      '</tbody></table></div>');
+    const weak = np.slice().sort((a, b2) => a.febAmt - b2.febAmt)[0];
+    b.push('<div class="block"><h3>结论</h3><ol class="acts">' +
+      a('把宣发资源继续压在《' + esc(S.top1.name) + '》上',
+        '它是唯一被验证过的新品成功案例（1 月 ' + nf(S.top1.janQty) + ' → 2 月 ' + nf(S.top1.febQty) + ' 杯），继续追投的确定性最高。',
+        '新品内占比 ' + (S.top1.febAmt / S.newFeb * 100).toFixed(0) + '%。') +
+      a('给《' + esc(weak.name) + '》设一个观察期限',
+        '2 月仅 ¥' + nf(weak.febAmt) + '，基本没有起量。建议给它一次单独的曝光机会（菜单位/搭配推荐），两周无变化就减配。',
+        '新品里表现最弱。') +
+      '</ol></div>');
+    return b.join('');
+  }
+
+  if (/备货|库存|进货|采购|备料/.test(key)) {
+    const top = S.top5;
+    b.push('<div class="block"><h3>下月备货建议</h3><div class="lead">' +
+      '按 2 月下半月（2.16–2.28，15 天）的日均水平折算 30 天，再留 15% 安全库存。' +
+      '参考基准：2 月下半月全店卖出 <b>' + nf(M.periodQty[3]) + '</b> 杯，收入 <b>¥' + nf(M.periodAmt[3]) + '</b>。' +
+      '</div></div>');
+    b.push('<div class="block"><h3>头部单品备料参考</h3><table class="ranks"><thead><tr><th>饮品</th><th>2月下旬(15天)</th><th>日均</th><th>建议月备</th></tr></thead><tbody>' +
+      top.map(r => {
+        const d = r.q[3] / 15;
+        return '<tr><td>' + esc(r.name) + '</td><td>' + nf(r.q[3]) + '</td><td>' + d.toFixed(1) + '</td><td>' + (d * 30 * 1.15).toFixed(0) + ' 杯</td></tr>';
+      }).join('') + '</tbody></table></div>');
+    const fb = S.faint.slice(0, 5);
+    if (fb.length) {
+      b.push('<div class="block"><h3>可以少备甚至不备</h3><div class="card t-warn"><div class="cb">' +
+        fb.map(r => '《' + esc(r.name) + '》2 月 <em>' + nf(r.febQty) + '</em> 杯').join('、') +
+        ' 等 <em>' + S.faint.length + '</em> 款合计不足 12 杯，属于长尾。建议按需少量备料，避免原料过期损耗。</div></div></div>');
+    }
+    b.push('<div class="block"><h3>提醒</h3><div class="card"><div class="cb">' +
+      '以上是按「2 月下半月 = 常态」折算的。但 2 月下半月本身处在春节后的回落段（环比 2 月上半月 <em class="down">' + pct(S.febIn) +
+      '</em>），<b>如果 3 月有开学/回暖利好，实际需求会高于这个基准</b>，建议前两周按此备量、每周根据实际销量调整。</div></div></div>');
+    return b.join('');
+  }
+
+  if (/价格|单价|多少钱|价格带|客单/.test(key)) {
+    b.push('<div class="block"><h3>价格带结构</h3><div class="lead">' +
+      '按单价把 ' + R.length + ' 款分成三档，2 月收入占比见下表。收入主力在 <b>' +
+      S.bands.slice().sort((a, b2) => b2.share - a.share)[0].name + '</b> 档。' +
+      '</div></div>');
+    b.push('<div class="block"><h3>三档对照</h3><table class="ranks"><thead><tr><th>价格带</th><th>款数</th><th>2月销量</th><th>2月收入</th><th>收入占比</th><th>环比</th></tr></thead><tbody>' +
+      S.bands.map(x => '<tr><td>' + x.name + '</td><td>' + x.n + '</td><td>' + nf(x.febQty) + '</td><td>¥' + nf(x.feb) +
+        '</td><td>' + (x.share * 100).toFixed(1) + '%</td><td class="' + cls(x.mom) + '">' + pct(x.mom) + '</td></tr>').join('') +
+      '</tbody></table></div>');
+    b.push('<div class="block"><h3>结论与建议</h3><ol class="acts">' +
+      a('用加料/套餐把 4–5 元档的流量往上导',
+        '低价格带销量大（' + nf(S.bands[0].febQty) + ' 杯）但收入占比仅 ' + (S.bands[0].share * 100).toFixed(1) + '%。' +
+        '建议推「纯茶 + 芋圆/珍珠」的加料选项，或「纯茶 + 烤奶」的第二杯组合，把客单拉到 8 元以上。',
+        '低价档销量高、收入贡献低，是最有提升空间的地方。') +
+      a('守住高价格带的爆款',
+        S.bands[2].name + ' 档 2 月收入 ¥' + nf(S.bands[2].feb) + '（占 ' + (S.bands[2].share * 100).toFixed(1) + '%），环比 ' + pct(S.bands[2].mom) +
+        '。这一档靠奶盖茶与杨枝甘露支撑，原料成本高，必须保证出品稳定。',
+        '高价格带是收入弹性来源。') +
+      '</ol></div>');
+    return b.join('');
+  }
+
+  if (/月度|对比|1月|2月|月份|环比/.test(key)) {
+    b.push('<div class="block"><h3>月度对比</h3><div class="lead">' +
+      '1 月收入 <b>¥' + nf(M.janAmt) + '</b>（' + nf(M.janQty) + ' 杯），2 月 <b>¥' + nf(M.febAmt) + '</b>（' + nf(M.febQty) + ' 杯），' +
+      '收入环比 <b>' + pct(M.momAmt) + '</b>、销量环比 <b>' + pct(M.momQty) + '</b>。' +
+      '但剔除《' + esc(S.top1.name) + '》后，其余单品的收入环比是 <b>' + pct(S.restMom) + '</b>。' +
+      '</div></div>');
+    b.push('<div class="block"><h3>半月明细</h3><table class="ranks"><thead><tr><th>周期</th><th>销量</th><th>收入</th><th>占两月</th></tr></thead><tbody>' +
+      META.periods.map((p, i) => '<tr><td>' + p.label + '（' + p.range + '）</td><td>' + nf(M.periodQty[i]) + '</td><td>¥' + nf(M.periodAmt[i]) +
+        '</td><td>' + (M.periodAmt[i] / M.totalAmt * 100).toFixed(1) + '%</td></tr>').join('') +
+      '</tbody></table></div>');
+    b.push('<div class="block"><h3>怎么解读</h3><div class="card t-warn">' +
+      '<div class="cb">两个月看下来是“<em>先起后落</em>”的形态：1 月下半月冲高（环比 1 月上半月 <em class="up">' + pct(S.janIn) +
+      '</em>），2 月开始逐级回落（2 月下 vs 2 月上 <em class="down">' + pct(S.febIn) + '</em>）。' +
+      '冲高对应 1 月中旬的海报宣发，回落对应春节后客流下降。<b>所以 2 月环比 +' + (M.momAmt * 100).toFixed(1) +
+      '% 这个好看的月度数字，实际上掩盖了下半月的真实下滑。</b>' +
+      '对外汇报时建议主动拆开说明，比只报月度环比更可信。</div></div></div>');
+    return b.join('');
+  }
+
+  if (/下架|砍|淘汰|停售|减配|去留|该留/.test(key)) {
+    const sorted = R.slice().sort((a, b2) => b2.febQty - a.febQty);
+    const keep = sorted.filter(r => r.febQty >= 40);
+    const watch = sorted.filter(r => r.febQty > 20 && r.febQty < 40 && r.mom < -0.04);
+    const thin = sorted.filter(r => r.febQty > 12 && r.febQty <= 20);
+    const faint = sorted.filter(r => r.febQty <= 12);
+    const lost = sum(faint.map(r => r.febAmt));
+    b.push('<div class="block"><h3>去留盘点</h3><div class="lead">' +
+      '按 2 月实际销量把 ' + R.length + ' 款分成四档：<b>核心保留 ' + keep.length + ' 款</b>（每款 ≥ 40 杯）、' +
+      '<b>重点观察 ' + watch.length + ' 款</b>（20–40 杯且在下滑）、<b>缩减备料 ' + thin.length + ' 款</b>（13–20 杯）、' +
+      '<b>下架候选 ' + faint.length + ' 款</b>（≤ 12 杯）。' +
+      '下架候选合计每月只贡献 <b>¥' + nf(lost) + '</b>（占 2 月收入 ' + (M.febAmt ? lost / M.febAmt * 100 : 0).toFixed(1) + '%），砍掉几乎不伤收入，却能省下原料与操作时间。' +
+      '</div></div>');
+    b.push('<div class="block"><h3>下架候选（' + faint.length + ' 款）</h3>' +
+      (faint.length ? '<table class="ranks"><thead><tr><th>饮品</th><th>1月</th><th>2月</th><th>2月收入</th><th>品类</th></tr></thead><tbody>' +
+        faint.sort((a, b2) => a.febQty - b2.febQty).map(r => '<tr><td>' + esc(r.name) + '</td><td>' + nf(r.janQty) + '</td><td>' + nf(r.febQty) +
+          '</td><td>¥' + nf(r.febAmt) + '</td><td>' + esc(r.cat) + '</td></tr>').join('') + '</tbody></table>'
+        : '<div class="card"><div class="cb">当前没有 2 月销量 ≤ 12 杯的单品，暂无下架候选。</div></div>') +
+      '</div>');
+    b.push('<div class="block"><h3>处置建议</h3><ol class="acts">' +
+      (faint.length ? a('下架候选先「停售观察」而非直接删除',
+        '《' + faint.slice(0, 2).map(r => esc(r.name)).join('》《') + '》等 <b>' + faint.length + ' 款</b>建议先停售两周：菜单上撤下、不再备全量原料，但保留配方。' +
+        '有客人点名再做，两周内无人主动点即可正式下架。',
+        '合计月收入仅 ¥' + nf(lost) + '，试错成本接近零。') : '') +
+      (thin.length ? a('缩减备料档按需进货',
+        '《' + thin.slice(0, 3).map(r => esc(r.name)).join('》《') + '》等 <b>' + thin.length + ' 款</b>每月 13–20 杯，保留售卖但原料按周少量采购，避免积压过期。',
+        '销量低但仍有稳定客群，不宜直接砍。') : '') +
+      (watch.length ? a('观察档设一个明确的判断线',
+        '《' + watch.slice(0, 3).map(r => esc(r.name)).join('》《') + '》在下滑但还有基本盘。建议以「3 月能否回到 1 月销量的 80%」为线：回得来就留，回不来就并入缩减档。',
+        '2 月下滑含春节因素，需要一个月度基准再做决定。') : '') +
+      a('腾出的位置留给新品测试',
+        '下架腾出的菜单位与备料资金，正好用来测试下一款新品——茉上花开的成功证明这家店吃宣发这套打法，新品命中率值得持续投入。',
+        '在售 ' + R.length + ' 款里头部 ' + keep.length + ' 款贡献了大部分收入，长尾里藏着的机会成本更高。') +
+      '</ol></div>');
+    return b.join('');
+  }
+
+  if (/口径|数据|来源|可靠|真|假|验证/.test(key)) {
+    b.push('<div class="block"><h3>数据口径</h3><ul class="note-list">' +
+      META.notes.map(n => '<li' + (/红线|来源|口径/.test(n.k) ? ' class="hot"' : '') + '><b>' + esc(n.k) + '</b>：' + esc(n.v) + '</li>').join('') +
+      '</ul></div>');
+    b.push('<div class="block"><h3>这套数据能说什么、不能说什么</h3><div class="card t-warn"><div class="cb">' +
+      '<b>能说：</b>相对趋势（哪款在涨、哪款在跌、哪个周期最高）、结构（价格带与品类占比）、以及宣发动作带来的方向性变化。<br>' +
+      '<b>不能说：</b>精确到个位的绝对销量、以及精确的利润率（本表不含成本）。<br>' +
+      '<b>使用建议：</b>对外讲的时候按“趋势 + 结构 + 动作效果”来讲，并主动说明数据来源是本人现场记录后按周期整理，' +
+      '把口径先讲清楚，反而比报一堆精确数字更稳。</div></div></div>');
+    return b.join('');
+  }
+
+  /* 默认 */
+  return renderSummary();
+}
+
+/* ---------- 8. 交互 ---------- */
+const feed = $('#feed');
+let busy = false;
+
+function toast(msg) {
+  const t = $('#toast');
+  t.textContent = msg; t.classList.add('on');
+  clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('on'), 1800);
+}
+
+function push(html, label) {
+  feed.innerHTML = html;
+  feed.scrollTop = 0;
+}
+
+function showBusy(label) {
+  const old = feed.innerHTML;
+  feed.insertAdjacentHTML('afterbegin',
+    '<div class="block" id="busyBlock"><h3>' + label + '</h3><div class="typing"><i></i><i></i><i></i> 正在分析</div></div>');
+  return old;
+}
+
+/* 智能摘要 */
+$('#btnSummary').onclick = () => {
+  if (busy) return;
+  busy = true;
+  showBusy('智能摘要');
+  setTimeout(() => {
+    push(renderSummary());
+    busy = false;
+    toast('已生成全表智能摘要');
+  }, 420);
+};
+
+/* 分析选区 */
+$('#btnRange').onclick = () => {
+  if (!SEL) { toast('请先在左侧表格里框选一块数据'); return; }
+  if (busy) return;
+  busy = true;
+  feed.innerHTML = '';
+  showBusy('分析选中区域');
+  setTimeout(() => {
+    push(renderRange());
+    busy = false;
+  }, 380);
+};
+
+/* 视图切换 */
+$('#viewSeg').addEventListener('click', e => {
+  const btn = e.target.closest('button');
+  if (!btn) return;
+  Array.prototype.forEach.call($('#viewSeg').children, b => b.classList.toggle('on', b === btn));
+  VIEW = btn.dataset.view;
+  COLS = colDefs(VIEW);
+  SEL = null;
+  renderTable();
+});
+
+/* 快捷问题 */
+$('#quick').addEventListener('click', e => {
+  const btn = e.target.closest('button');
+  if (!btn) return;
+  ask(btn.dataset.q);
+});
+
+$('#askBtn').onclick = () => {
+  const v = $('#askInput').value.trim();
+  if (!v) { toast('先输入一个问题'); return; }
+  runAI(v, 'AI 分析 · ' + v);
+};
+$('#askInput').addEventListener('keydown', e => { if (e.key === 'Enter') $('#askBtn').click(); });
+
+function ask(q) {
+  if (busy) return;
+  busy = true;
+  feed.innerHTML = '';
+  feed.insertAdjacentHTML('afterbegin', '<div class="block"><h3>你的问题</h3><div class="lead">' + esc(q) + '</div></div>');
+  feed.insertAdjacentHTML('beforeend', '<div class="block"><h3>分析中</h3><div class="typing"><i></i><i></i><i></i> 正在核算数据</div></div>');
+  setTimeout(() => {
+    const head = '<div class="block"><h3>你的问题</h3><div class="lead">' + esc(q) + '</div></div>';
+    feed.innerHTML = head + renderTopic(q);
+    feed.scrollTop = 0;
+    busy = false;
+  }, 400);
+}
+
+/* 导入表格 */
+$('#btnImport').onclick = () => $('#fileInput').click();
+$('#fileInput').addEventListener('change', e => {
+  const f = e.target.files && e.target.files[0];
+  if (!f) return;
+  if (typeof XLSX === 'undefined') { toast('解析组件未加载（需联网），已保留当前数据'); return; }
+  const fr = new FileReader();
+  fr.onload = ev => {
+    try {
+      const wb = XLSX.read(new Uint8Array(ev.target.result), { type: 'array' });
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const aoa = XLSX.utils.sheet_to_json(ws, { header: 1, blankrows: false });
+      const parsed = parseSheet(aoa);
+      if (!parsed.length) { toast('没识别到有效数据行，已保留当前数据'); return; }
+      M = buildModel(parsed);
+      $('#docTitle').textContent = f.name.replace(/\.(xlsx|xls|csv)$/i, '');
+      $('#gridTitle').textContent = '销售数据（已导入 ' + parsed.length + ' 行）';
+      SEL = null; renderTable();
+      feed.innerHTML = '<div class="empty"><b>已导入表格。</b><br>点「智能摘要」对整表做分析，或框选一块数据做针对性分析。</div>';
+      toast('已导入 ' + parsed.length + ' 行数据');
+    } catch (err) {
+      toast('解析失败：' + err.message);
+    }
+  };
+  fr.readAsArrayBuffer(f);
+});
+
+/* 通用解析：找表头行 → 找名称/单价/销量列 */
+function parseSheet(aoa) {
+  let hi = -1, nameC = -1, priceC = -1;
+  for (let i = 0; i < Math.min(aoa.length, 12); i++) {
+    const row = (aoa[i] || []).map(x => String(x == null ? '' : x));
+    const ni = row.findIndex(x => /饮品|名称|商品|品名|sku/i.test(x));
+    const pi = row.findIndex(x => /单价|价格|售价/.test(x));
+    if (ni >= 0 && pi >= 0) { hi = i; nameC = ni; priceC = pi; break; }
+  }
+  if (hi < 0) {
+    /* 退化为：第一列当名称、没有单价 */
+    for (let i = 0; i < Math.min(aoa.length, 12); i++) {
+      const row = (aoa[i] || []).map(x => String(x == null ? '' : x));
+      const ni = row.findIndex(x => /饮品|名称|商品|品名/.test(x));
+      if (ni >= 0) { hi = i; nameC = ni; break; }
+    }
+  }
+  if (hi < 0) return [];
+  const header = (aoa[hi] || []).map(x => String(x == null ? '' : x));
+  /* 数值列：表头含销量/数量/杯/销售额/金额 或纯数字表头 */
+  const valCols = [];
+  header.forEach((h, i) => {
+    if (i === nameC || i === priceC) return;
+    if (/销量|数量|杯|销售额|金额|收入/.test(h)) valCols.push(i);
+  });
+  if (!valCols.length) {
+    /* 取后面全是数字的列 */
+    for (let i = 0; i < header.length; i++) {
+      if (i === nameC || i === priceC) continue;
+      let num = 0, tot = 0;
+      for (let r = hi + 1; r < aoa.length; r++) {
+        const v = (aoa[r] || [])[i];
+        if (v === '' || v == null) continue;
+        tot++;
+        if (typeof v === 'number' || /^-?\d+(\.\d+)?$/.test(String(v).trim())) num++;
+      }
+      if (tot > 0 && num / tot > 0.8) valCols.push(i);
+    }
+  }
+  const out = [];
+  for (let r = hi + 1; r < aoa.length; r++) {
+    const row = aoa[r] || [];
+    const nm = String(row[nameC] == null ? '' : row[nameC]).trim();
+    if (!nm || /合计|总计|小计|汇总/.test(nm)) continue;
+    const num = x => {
+      const s = String(x == null ? '' : x).replace(/[，,\s¥￥元杯]/g, '');
+      const n = parseFloat(s);
+      return isNaN(n) ? null : n;
+    };
+    const price = priceC >= 0 ? (num(row[priceC]) || 0) : 0;
+    let q = valCols.slice(0, 4).map(i => num(row[i]));
+    while (q.length < 4) q.push(null);
+    out.push({ no: out.length + 1, name: nm, price: price, type: '', q: q, note: '' });
+  }
+  return out;
+}
+
+/* ---------- 9. 云端大模型（WorkBuddy 云服务托管，无需自备 API Key） ---------- */
+/* endpoint / publishableKey 来自云服务开通时下发的 publicConfig，二者必须同时传入 */
+const PUBLIC_CONFIG = {
+  endpoint: 'https://chazhidu-sales-ai.app.workbuddy.host',
+  publishableKey: 'wbpk_TaKBcSmQ6JnE8ClwkE9eWP_Ufv5L8DKiDYiqRD1GMnoVDqm13AoL56J'
+};
+
+const SYS_PROMPT = [
+  '你是零售饮品门店（乡镇奶茶店）的数据分析师。用户会给你一张门店销售表的 CSV（可能是整表，也可能是他框选出来的局部区域），以及一个问题。',
+  '输出要求：',
+  '1. 先给「结论」：一句话讲清最重要的发现，必须带具体数字。',
+  '2. 再给「关键发现」：3–5 条，每条都引用数据里的具体数字，不要空泛形容词。',
+  '3. 最后给「建议」：3 条可执行动作，写清做什么、依据是哪个数字。',
+  '规则：',
+  '- 只能用给定数据里的数字，绝不编造；数据不足时直接说这块数据看不出来。',
+  '- 该表由店员凭现场记忆估算补录，适合看趋势与结构，不适合当精确账目；涉及精确性时要主动提示。',
+  '- 中文输出，用小标题（###）+ 短列表；总长度控制在 500 字以内，不要复述整张表。'
+].join('\n');
+
+const DEFAULT_Q = '请对这批数据做一次完整的销售分析。';
+
+let cloudClient = null, MODEL = null, genBusy = false, aiController = null;
+
+function setAIState(text, kind) {
+  const el = $('#aiState');
+  el.textContent = text;
+  el.className = 'state' + (kind ? ' ' + kind : '');
+}
+
+async function ensureCloud() {
+  if (cloudClient && MODEL) return;
+  if (!(window.WorkBuddyCloud && window.WorkBuddyCloud.createWorkBuddyCloud)) {
+    throw new Error('云服务 SDK 未加载（需要联网）');
+  }
+  cloudClient = window.WorkBuddyCloud.createWorkBuddyCloud({
+    endpoint: PUBLIC_CONFIG.endpoint,
+    publishableKey: PUBLIC_CONFIG.publishableKey
+  });
+  const models = await cloudClient.llm.models.list();
+  if (!models || !models.length) throw new Error('云服务当前没有可用模型');
+  MODEL = models.find(m => m.disabled !== true);
+  if (!MODEL) throw new Error('可用模型都处于停用状态');
+  setAIState('已连接 · ' + (MODEL.name || MODEL.id), 'on');
+}
+
+/* 组装上下文：有选区就只发选区，否则发全表 */
+function buildContext() {
+  const s = normSel(SEL);
+  const head = ['饮品名称', '单价(元)', '1月上半月(杯)', '1月下半月(杯)', '2月上半月(杯)', '2月下半月(杯)', '1月合计(杯)', '2月合计(杯)', '销量环比'];
+  let rows, scope, colsTxt;
+
+  if (s) {
+    rows = [];
+    for (let r = s.r1; r <= s.r2; r++) rows.push(M.rows[r]);
+    const cs = [];
+    for (let c = s.c1; c <= s.c2; c++) if (COLS[c]) cs.push(COLS[c].t);
+    colsTxt = cs.join('、');
+    scope = '用户框选了第 ' + (s.r1 + 1) + '–' + (s.r2 + 1) + ' 行（共 ' + rows.length + ' 款饮品）、第 ' + (s.c1 + 1) + '–' + (s.c2 + 1) + ' 列（列名：' + colsTxt + '）';
+  } else {
+    rows = M.rows;
+    scope = '全表 ' + M.rows.length + ' 款饮品';
+  }
+
+  const lines = [head.join(',')];
+  rows.forEach(r => {
+    lines.push([r.name, r.price, r.q[0], r.q[1], r.q[2], r.q[3], r.janQty, r.febQty, (r.mom * 100).toFixed(1) + '%'].join(','));
+  });
+  lines.push(['合计', '', M.periodQty[0], M.periodQty[1], M.periodQty[2], M.periodQty[3], M.janQty, M.febQty, (M.momQty * 100).toFixed(1) + '%'].join(','));
+  /* 若选区只跨一部分列，把该区域的合计数也告诉模型 */
+  if (s && rows.length > 1) {
+    const nums = [];
+    for (let c = s.c1; c <= s.c2; c++) {
+      const col = COLS[c];
+      if (!col) continue;
+      const vs = rows.map(r => col.get(r)).filter(v => typeof v === 'number');
+      if (vs.length && vs.length === rows.length) nums.push(col.t + ' 合计=' + nf(sum(vs)));
+    }
+    if (nums.length) lines.push('# 选区列合计：' + nums.join('，'));
+  }
+
+  return {
+    scope: scope,
+    csv: lines.join('\n'),
+    note: '统计周期为 2025 年 1 月、2 月，每 15 天一期；销售额 = 单价 × 销量；环比 = 2 月 ÷ 1 月 − 1。'
+  };
+}
+
+/* 极简 Markdown → HTML（先转义再解析，避免模型输出注入页面） */
+function mdToHtml(md) {
+  const esc3 = t => String(t).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+  const bold = t => t.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/`(.+?)`/g, '<strong>$1</strong>');
+  const lines = esc3(md).split(/\r?\n/);
+  const out = [];
+  let list = null;
+  const close = () => { if (list) { out.push('</' + list + '>'); list = null; } };
+  lines.forEach(raw => {
+    const line = raw.trim();
+    let m;
+    if (!line) { close(); return; }
+    if ((m = line.match(/^#{1,6}\s*(.+)$/))) { close(); out.push('<h4>' + bold(m[1]) + '</h4>'); return; }
+    if ((m = line.match(/^[-*•]\s+(.+)$/))) { if (list !== 'ul') { close(); out.push('<ul>'); list = 'ul'; } out.push('<li>' + bold(m[1]) + '</li>'); return; }
+    if ((m = line.match(/^\d+[.、)]\s*(.+)$/))) { if (list !== 'ol') { close(); out.push('<ol>'); list = 'ol'; } out.push('<li>' + bold(m[1]) + '</li>'); return; }
+    if ((m = line.match(/^&gt;\s*(.+)$/))) { close(); out.push('<blockquote>' + bold(m[1]) + '</blockquote>'); return; }
+    if (/^[-*_]{3,}$/.test(line)) { close(); return; }
+    close();
+    out.push('<p>' + bold(line) + '</p>');
+  });
+  close();
+  return out.join('');
+}
+
+function aiHint(e, code) {
+  if (/^auth_/.test(code)) return '当前访问地址未被云服务授权。数据通道只允许发布后的正式域名访问，把应用发布上线后即可使用 AI 功能。';
+  if (/^quota_/.test(code)) return '模型额度已用尽或触发限流，请稍后再试。';
+  if (/^request_/.test(code)) return '请求参数不被模型接受：' + ((e.error && e.error.message) || code);
+  if (/^gateway_|^model_/.test(code)) return '模型服务暂时不可用，稍后重试即可。';
+  if (/AbortError/i.test((e && e.name) || '')) return '已手动停止生成。';
+  return (e && (e.message || (e.error && e.error.message))) || '调用失败，请稍后重试。';
+}
+
+async function runAI(question, title) {
+  if (genBusy) { toast('正在生成中，请稍候'); return; }
+  genBusy = true;
+  aiController = new AbortController();
+  $('#btnAIStop').style.display = '';
+
+  const ctx = buildContext();
+  feed.insertAdjacentHTML('afterbegin',
+    '<div class="block" id="aiBlock"><h3>' + esc(title) + '</h3>' +
+    '<div class="card"><div class="cb md" id="aiOut"><span class="typing"><i></i><i></i><i></i> 正在连接模型</span></div></div>' +
+    '<div class="ai-meta" id="aiMeta">数据范围：' + esc(ctx.scope) + '</div></div>');
+  const out = document.getElementById('aiOut');
+  const meta = document.getElementById('aiMeta');
+  let acc = '';
+
+  try {
+    await ensureCloud();
+    meta.textContent = '数据范围：' + ctx.scope + ' · 模型：' + (MODEL.name || MODEL.id);
+    const messages = [
+      { role: 'system', content: SYS_PROMPT },
+      { role: 'user', content: '【数据范围】' + ctx.scope + '\n【口径】' + ctx.note + '\n\n【数据（CSV）】\n' + ctx.csv + '\n\n【我的问题】' + (question || DEFAULT_Q) }
+    ];
+    let usage = null;
+    for await (const chunk of cloudClient.llm.chat.completions.create({
+      model: MODEL.id,
+      messages: messages,
+      stream: true,
+      stream_options: { include_usage: true },
+      temperature: 0.6,
+      signal: aiController.signal
+    })) {
+      const d = chunk.choices && chunk.choices[0] && chunk.choices[0].delta;
+      if (d && d.content) {
+        acc += d.content;
+        out.innerHTML = mdToHtml(acc) + '<span class="caret"></span>';
+        feed.scrollTop = 0;
+      }
+      if (chunk.usage) usage = chunk.usage;
+    }
+    out.innerHTML = acc ? mdToHtml(acc) : '<p>模型没有返回内容，请重试。</p>';
+    if (usage) meta.textContent = '数据范围：' + ctx.scope + ' · 模型：' + (MODEL.name || MODEL.id) +
+      ' · 输出 ' + usage.completion_tokens + ' tokens';
+  } catch (e) {
+    const code = (e && e.error && e.error.code) || (e && e.code) || '';
+    setAIState('连接异常', 'err');
+    out.innerHTML = (acc ? mdToHtml(acc) : '') +
+      '<blockquote>调用未完成：' + esc(aiHint(e, code)) + '</blockquote>';
+  } finally {
+    genBusy = false; aiController = null;
+    $('#btnAIStop').style.display = 'none';
+  }
+}
+
+$('#btnAI').onclick = () => {
+  const s = normSel(SEL);
+  runAI('', s ? 'AI 深度解读 · 选中区域' : 'AI 深度解读 · 全表');
+};
+
+$('#btnAIStop').onclick = () => { if (aiController) { aiController.abort(); toast('已停止生成'); } };
+
+/* 初始化 */
+renderTable();
+</script>
+<script src="vendor/xlsx.full.min.js"></script>
+<script src="vendor/workbuddy-cloud-sdk.js"></script>
+</body>
+</html>
