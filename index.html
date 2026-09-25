@@ -115,8 +115,8 @@
   .qr-row .cap{font-size:12px;color:var(--muted);max-width:110px;line-height:1.5}
 
   /* 奖项行 */
-  .awards{margin-top:34px;display:grid;grid-template-columns:1fr 1fr;gap:22px}
-  @media(max-width:720px){.awards{grid-template-columns:1fr}}
+  .awards{margin-top:34px;display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  @media(max-width:900px){.awards{grid-template-columns:1fr}}
   .award{border:1px solid var(--line);border-radius:16px;padding:22px 24px;background:var(--panel);transition:border-color .4s var(--e-soft),background .4s var(--e-soft)}
   .award:hover{border-color:#3f3f48;background:#17171b}
   .award .yr{color:var(--muted);font-size:13px;letter-spacing:.2em}
