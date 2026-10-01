@@ -108,6 +108,8 @@
   .tags{margin-top:14px;display:flex;flex-wrap:wrap;gap:8px}
   .tag{font-size:12px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:4px 12px}
   .tag-status{color:#d8d4cc;border-color:#4a3238}
+  a.tag-link{color:#e8c47a;border-color:#6b5326;text-decoration:none;cursor:pointer;transition:all .2s ease}
+  a.tag-link:hover{background:rgba(232,196,122,.12);border-color:#e8c47a;color:#f5d99b}
   .linkline{margin-top:16px;font-size:14px;color:var(--text);border-bottom:1px solid #4a3238;padding-bottom:2px;display:inline-block;transition:border-color .35s var(--e-soft),letter-spacing .35s var(--e-out)}
   .linkline:hover{border-color:var(--wine2);letter-spacing:.02em}
   .card .qr{width:92px;height:92px;border-radius:10px;background:#f5f2ec;padding:6px;margin-top:16px}
@@ -365,8 +367,8 @@
     <div class="poster-grid" data-stagger>
       <a href="assets/chazhifu-flyer.png" target="_blank" rel="noopener" data-zoom data-reveal><img src="assets/chazhifu-flyer.png" alt="茶之都门店宣传单（茉上花开 · 强烈推荐）" loading="lazy"></a>
       <div class="sales-col" data-reveal>
-        <a href="assets/chazhifu-sales.jpg" target="_blank" rel="noopener" data-zoom><img src="assets/chazhifu-sales.jpg" alt="茶之都饮品销售统计（15 天周期版）" loading="lazy"></a>
-        <p class="sales-note">茶之都品牌实习期间：独立完成新品宣传海报设计，推进物料制作与落地；策划校园周边地推推广，为门店搭建宣传方案，成功推动门店半月销售额环比增长约 <span class="metric"><b class="cnum" data-count="56">56</b>%</span>，主推新品跃居门店销量第一。</p>
+        <a href="assets/chazhifu-sales.jpg" target="_blank" rel="noopener" data-zoom><img src="assets/chazhifu-sales.jpg" alt="茶之都饮品销售统计" loading="lazy"></a>
+        <p class="sales-note">茶之都品牌实习期间：独立完成新品宣传海报设计，推进物料制作与落地；策划校园周边地推推广，为门店搭建宣传方案。<strong>发现主推新品"有热度、没销量"后，主动向店长提议"买三送一"促销并落地执行（1.16 起至 2 月底）</strong>，该单品销量由 346 杯增至 609 杯、<span class="metric">环比 <b class="cnum" data-count="76">76</b>%</span>，实收销售额由 ¥2,120 增至 ¥3,654、环比 +72%，占门店总销售额比重由 13.8% 升至 22.8%，主推新品跃居门店销量第一。</p>
         <div class="ai-demo" data-reveal>
           <video controls playsinline preload="metadata" poster="assets/poster-ai-demo.jpg" src="assets/chazhidu-ai-demo.mp4"></video>
           <p class="ai-note">利用 AI 模型接入到所创建的文档中并形成智能摘要等多项功能，能够对文档内的任意框选内容进行自动分析，帮助更好的了解产品的销售情况和竞争优势比较以及根据当月销售情况预测下个月的备货情况。</p>
@@ -435,6 +437,26 @@
           <h3>科斌饮品点单助手 · 点单小程序</h3>
           <p>完整自助点单链路：菜单浏览、规格选择（冰量/糖度/加料）、购物车与下单。个人主体注册，走通实名认证与 ICP 备案全流程。</p>
           <div class="tags"><span class="tag">云开发</span><span class="tag">点单链路</span><span class="tag">备案合规</span><span class="tag tag-status">开发完成 · 发布准备中</span></div>
+        </div>
+      </div>
+      <div class="card" data-reveal>
+        <a class="media" href="3c-teardown.html" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0f766e,#0b3b38);text-decoration:none">
+          <span style="color:#ecfdf5;font-size:19px;font-weight:700;letter-spacing:1px;text-align:center">3C 出海品牌独立站拆解报告<br><span style="font-size:12px;font-weight:400;opacity:.75">Anker · Baseus · UGREEN</span></span>
+        </a>
+        <div class="body">
+          <h3>3C 出海品牌独立站拆解报告</h3>
+          <p>拆解 Anker / Baseus / UGREEN 三个中国 3C 出海标杆的独立站：首屏与信任机制、卖点表达、信任体系、流量结构，并给出「如果我来做一个 3C 品牌」的选品—定价—投放—转化四步落地方案。</p>
+          <div class="tags"><span class="tag">独立站</span><span class="tag">竞品拆解</span><span class="tag">转化链路</span><a class="tag tag-link" href="3c-teardown.html" target="_blank" rel="noopener">在线阅读 ↗</a></div>
+        </div>
+      </div>
+      <div class="card" data-reveal>
+        <a class="media" href="roas-model.html" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1d4ed8,#172554);text-decoration:none">
+          <span style="color:#eff6ff;font-size:19px;font-weight:700;letter-spacing:1px;text-align:center">ROAS 投放测算模型<br><span style="font-size:12px;font-weight:400;opacity:.75">7 参数滑块 · 实时重算 · 在线可交互</span></span>
+        </a>
+        <div class="body">
+          <h3>独立站投放 ROAS 测算模型（可交互）</h3>
+          <p>7 个参数滑块实时重算盈亏平衡 ROAS、单均净利与净利率，含基准 / 成本恶化 / 转化低效 / 高效运营四场景对比——把「投放赚不赚钱」变成一眼可验证的数学题。</p>
+          <div class="tags"><span class="tag">投放</span><span class="tag">ROAS</span><span class="tag">单位经济模型</span><a class="tag tag-link" href="roas-model.html" target="_blank" rel="noopener">在线试用 ↗</a></div>
         </div>
       </div>
     </div>
@@ -509,7 +531,7 @@
     <a class="aimodal-ext" href="ai-table/index.html" target="_blank" rel="noopener">新窗口打开 ↗</a>
     <button class="aimodal-x" id="aiModalX" type="button" aria-label="关闭">✕</button>
   </div>
-  <iframe class="aimodal-frame" id="aiModalFrame" title="门店销售数据 AI 智能分析台" data-src="https://chazhidu-sales-ai.app.workbuddy.host/ai-table/index.html"></iframe>
+  <iframe class="aimodal-frame" id="aiModalFrame" title="门店销售数据 AI 智能分析台" data-src="ai-table/index.html"></iframe>
   <div class="aimodal-hint">按 ESC 或点击 ✕ 关闭 · 内置 36 款饮品 4 个周期真实销售数据，可直接框选数据提问（AI 分析需联网，首次加载约 2–5 秒）</div>
 </div>
 

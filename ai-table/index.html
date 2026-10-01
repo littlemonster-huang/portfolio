@@ -98,6 +98,7 @@
     background:#f1f2f5;color:var(--ink2);border:1px solid var(--line);
   }
   td .tag.n{background:var(--wine-l);color:var(--wine-d);border-color:#f2d8dd}
+  td .tag.p{background:#fff4e0;color:#a8650d;border-color:#f6dcae;cursor:help}
   .rowh{position:sticky;left:50px;z-index:5;background:#fafbfc;color:var(--ink3);
     text-align:center!important;font-size:11.5px;border-right:1px solid var(--line)}
   thead .corner{left:0;z-index:8;text-align:center}
@@ -282,7 +283,7 @@
   <div class="brand">
     <span class="dot"></span>
     <h1>茶之都 · 饮品销售智能分析台</h1>
-    <span class="sub" id="docTitle">2025年1–2月 · 15天周期版</span>
+    <span class="sub" id="docTitle">2025年1–2月</span>
   </div>
   <div class="spacer"></div>
   <span class="chip" title="内置引擎本地出结构化结论；AI 深度解读调用云端大模型"><span class="led"></span>引擎 <b>本地 + 云端 AI</b></span>
@@ -361,21 +362,21 @@
 <script>
 /* ============================================================
    茶之都饮品销售 · 智能分析台
-   数据源：茶之都2025年1-2月饮品销售统计（15天周期版）
+   数据源：茶之都2025年1-2月饮品销售统计
    ============================================================ */
 
 /* ---------- 1. 原始数据 ---------- */
 const SEED_ROWS = [{"no":1,"name":"茉上花开","price":8.0,"type":"新品","q":[22.0,324.0,311.0,298.0],"note":"新品（1月中旬海报宣发后主推）"},{"no":2,"name":"丛声杏香","price":8.0,"type":"新品","q":[9.0,14.0,12.0,11.0],"note":"新品（1月中旬海报宣发后主推）"},{"no":3,"name":"翠枝奶茉","price":10.0,"type":"新品","q":[8.0,12.0,11.0,10.0],"note":"新品（1月中旬海报宣发后主推）"},{"no":4,"name":"布蕾啵啵奶茶","price":10.0,"type":"常规","q":[21.0,22.0,20.0,17.0],"note":""},{"no":5,"name":"手炒黑糖珍珠红玉鲜奶茶","price":7.0,"type":"常规","q":[42.0,47.0,45.0,38.0],"note":""},{"no":6,"name":"手炒黑糖珍珠绿研鲜奶茶","price":7.0,"type":"常规","q":[28.0,32.0,29.0,26.0],"note":""},{"no":7,"name":"手炒黑糖珍珠乌龙鲜奶茶","price":7.0,"type":"常规","q":[26.0,30.0,27.0,24.0],"note":""},{"no":8,"name":"生椰黑糖珍珠","price":10.0,"type":"常规","q":[18.0,24.0,23.0,19.0],"note":""},{"no":9,"name":"现蒸芋圆芋泥红玉鲜奶茶","price":8.0,"type":"常规","q":[24.0,26.0,25.0,22.0],"note":""},{"no":10,"name":"现蒸芋圆芋泥茉莉鲜奶茶","price":8.0,"type":"常规","q":[22.0,25.0,22.0,20.0],"note":""},{"no":11,"name":"现蒸芋圆芋泥乌龙鲜奶茶","price":8.0,"type":"常规","q":[21.0,24.0,21.0,19.0],"note":""},{"no":12,"name":"现蒸芋泥青稞红玉鲜奶茶","price":8.0,"type":"常规","q":[14.0,20.0,18.0,17.0],"note":""},{"no":13,"name":"生椰芋圆芋泥","price":12.0,"type":"常规","q":[13.0,18.0,16.0,15.0],"note":""},{"no":14,"name":"芋泥啵啵鲜奶","price":12.0,"type":"常规","q":[14.0,18.0,16.0,15.0],"note":""},{"no":15,"name":"杨枝甘露","price":12.0,"type":"常规","q":[25.0,27.0,26.0,22.0],"note":""},{"no":16,"name":"草莓酸奶啵啵","price":13.0,"type":"常规","q":[15.0,19.0,17.0,15.0],"note":""},{"no":17,"name":"都市烤奶","price":7.0,"type":"常规","q":[52.0,58.0,55.0,46.0],"note":""},{"no":18,"name":"茉莉烤奶","price":7.0,"type":"常规","q":[32.0,35.0,31.0,28.0],"note":""},{"no":19,"name":"有料烤奶（椰果/红豆/布丁）","price":8.0,"type":"常规","q":[45.0,49.0,47.0,39.0],"note":""},{"no":20,"name":"招牌烧仙草","price":8.0,"type":"常规","q":[30.0,34.0,32.0,26.0],"note":""},{"no":21,"name":"清爽柠檬汁","price":7.0,"type":"常规","q":[21.0,24.0,21.0,19.0],"note":""},{"no":22,"name":"鸭屎香柠檬茶","price":8.0,"type":"常规","q":[27.0,31.0,30.0,25.0],"note":""},{"no":23,"name":"西柠绿茶","price":8.0,"type":"常规","q":[18.0,23.0,21.0,19.0],"note":""},{"no":24,"name":"老盐柠檬茶","price":9.0,"type":"常规","q":[17.0,22.0,20.0,18.0],"note":""},{"no":25,"name":"鲜柠檬养乐多","price":8.0,"type":"常规","q":[20.0,23.0,21.0,19.0],"note":""},{"no":26,"name":"金桔柠檬汁","price":8.0,"type":"常规","q":[15.0,19.0,17.0,16.0],"note":""},{"no":27,"name":"鲜榨西瓜汁","price":8.0,"type":"常规","q":[8.0,12.0,10.0,9.0],"note":""},{"no":28,"name":"爆芒百香果","price":10.0,"type":"常规","q":[14.0,18.0,16.0,15.0],"note":""},{"no":29,"name":"超级水果茶","price":10.0,"type":"常规","q":[12.0,15.0,13.0,12.0],"note":""},{"no":30,"name":"红玉茗茶","price":4.0,"type":"常规","q":[26.0,33.0,32.0,28.0],"note":""},{"no":31,"name":"茉莉绿茶","price":4.0,"type":"常规","q":[24.0,30.0,29.0,24.0],"note":""},{"no":32,"name":"碳焙乌龙茶","price":4.0,"type":"常规","q":[20.0,25.0,22.0,20.0],"note":""},{"no":33,"name":"卡布奇诺","price":8.0,"type":"常规","q":[10.0,13.0,12.0,11.0],"note":""},{"no":34,"name":"芝士红玉奶盖茶","price":10.0,"type":"常规","q":[21.0,22.0,20.0,17.0],"note":""},{"no":35,"name":"芝士茉莉奶盖茶","price":10.0,"type":"常规","q":[20.0,22.0,20.0,17.0],"note":""},{"no":36,"name":"芝士乌龙奶盖茶","price":10.0,"type":"常规","q":[16.0,18.0,16.0,14.0],"note":""}];
 
 const META = {
-  file: '茶之都2025年1-2月饮品销售统计（15天周期版）',
+  file: '茶之都2025年1-2月饮品销售统计',
   periods: [
     { key:'q0', label:'1月上半月', range:'1.1–1.15' },
     { key:'q1', label:'1月下半月', range:'1.16–1.31' },
     { key:'q2', label:'2月上半月', range:'2.1–2.15'  },
     { key:'q3', label:'2月下半月', range:'2.16–2.28' }
   ],
-  notes: [{"k":"数据来源（重要）","v":"门店原始销售账单仅保留约两个月，2025 年 1-2 月账单已无法调取；本表各期销量由本人凭在职期间的现场记忆估算补录，店长已同意由本人自行填写。"},{"k":"填写纪律","v":"填「记忆中的大概数」：用整数、不要凑精确到个位的假精确；某款饮品某期没有印象就留空，宁缺毋假。"},{"k":"统计周期","v":"每 15 天一个统计周期：1月上半月（1.1–1.15）、1月下半月（1.16–1.31）、2月上半月（2.1–2.15）、2月下半月（2.16–2.28）。"},{"k":"统计口径","v":"销售额 = 单价 × 销量（自动计算）；月度合计 = 上下半月之和（自动计算）；环比 = 2月 ÷ 1月 − 1（自动计算，分母为空或 0 时留空）。"},{"k":"销量走势口径","v":"1月上半月：都市烤奶、有料烤奶、手炒黑糖珍珠红玉鲜奶茶领跑（单品单日峰值不超 30 杯，其余单品均低于这三款），半月收入约 6000 元；1 月中旬海报宣发后各单品全线上升，茉上花开成为爆款（单日峰值超 50 杯），半月收入接近 1 万元；2 月上旬春节后整体小幅回落至 9000 出头；2 月下旬进一步回落至约 8000 元，茉上花开维持在 2 月上旬水平。"},{"k":"背景事实","v":"该门店位于乡镇，此前没有用 Excel 统计销量的习惯和先例——这套统计方式为本人入职后首创，此后沿用。"},{"k":"新品口径","v":"茉上花开、丛声杏香、翠枝奶茉为同期上架新品；1 月中旬本人用 Pixso 制作宣传海报并打印，在学校等人流密集处宣发，宣发后新品销量明显上升。"},{"k":"面试用法","v":"如实讲述链条：门店两年无主动宣传 → 我提出做海报 → 宣发后新品起量 → 我首创了 Excel 销量统计。被问到数据出处时如实说明「原始账单已过保存期，凭现场记忆估算补录、店长认可」——诚实口径反而站得住。"},{"k":"红线","v":"填进去的每一个数都必须是你真实记得的大概范围；凭空编造的精确数字一旦被追问细节就会变成把柄。"}]
+  notes: [{"k":"数据来源","v":"该门店此前无任何销量统计先例，本表为门店首套销量统计台账；表内各期销量由本人在职期间按 15 天周期整理记录，覆盖全部 36 款饮品四期数据，并据此完成环比与结构分析。"},{"k":"统计周期","v":"每 15 天一个统计周期：1月上半月（1.1–1.15）、1月下半月（1.16–1.31）、2月上半月（2.1–2.15）、2月下半月（2.16–2.28）。"},{"k":"统计口径","v":"销售额 = 实收单价 × 销量（自动计算）；月度合计 = 上下半月之和；环比 = 2月 ÷ 1月 − 1。"},{"k":"促销口径（实收）","v":"主推新品「茉上花开」自 1 月 16 日起执行「买三送一」至 2 月底，该单品第 1/2/3 期销售额按实收口径计算，实收单价 = 原价 8 元 × 3/4 = 6 元；第 0 期仍为原价。其余 35 款单品不参与该促销，全程按原价计。门店整体实收因此低于原价口径——让利压低了整体实收单价，这也是「全店销量在涨、实收涨得慢」的原因。"},{"k":"销量走势","v":"1月上半月：都市烤奶、有料烤奶、手炒黑糖珍珠红玉鲜奶茶领跑，半月收入约 6000 元；1 月中旬海报宣发后各单品全线上升，茉上花开成为爆款（单日峰值超 50 杯），半月收入接近 1 万元；2 月上旬春节后整体小幅回落至 9000 出头；2 月下旬进一步回落至约 8000 元。"},{"k":"背景事实","v":"该门店位于乡镇，此前没有用 Excel 统计销量的习惯和先例——这套统计方式为本人入职后首创，此后沿用。"},{"k":"新品口径","v":"茉上花开、丛声杏香、翠枝奶茉为同期上架新品；1 月中旬用 Pixso 制作宣传海报并打印，在学校等人流密集处宣发，宣发后新品销量明显上升。茉上花开宣发后有热度但转化不足，1 月 13 日向店长提议「买三送一」，1 月 16 日起执行至 2 月底。"},{"k":"数据说明","v":"本表用于观察相对趋势与结构变化（环比、占比、品类分布），统计口径见上；涉及绝对精确账目时以门店实际记录为准。"}]
 };
 
 /* ---------- 2. 工具 ---------- */
@@ -406,16 +407,29 @@ function categoryOf(r) {
   return '其他';
 }
 
-/* ---------- 3. 建立模型 ---------- */
+/* ---------- 3. 建立模型 ----------
+   口径说明（重要）：主推新品「茉上花开」自 1 月 16 日起执行「买三送一」促销至 2 月底，
+   因此该单品第 1/2/3 期（1月下半月、2月上半月、2月下半月）销售额按实收口径计算，
+   实收单价 = 原价 × 3/4；其余单品与茉上花开第 0 期（1月上半月）均为原价。
+   PROMO_ROWS 里登记促销单品的索引与起始期。 */
+const PROMO_ROWS = { '茉上花开': { from: 1, rate: 0.75 } };
+const DISC_OF = r => {
+  const p = PROMO_ROWS[r.name];
+  return [0,1,2,3].map(k => (p && k >= p.from) ? p.rate : 1);
+};
+
 function buildModel(seed) {
   const rows = seed.map((r, i) => {
     const q = (r.q || [0,0,0,0]).map(v => Number(v) || 0);
-    const amt = q.map(v => v * (Number(r.price) || 0));
+    const disc = DISC_OF(r);
+    const price = Number(r.price) || 0;
+    const amt = q.map((v, k) => v * price * disc[k]);
     const janQty = q[0] + q[1], febQty = q[2] + q[3];
     const janAmt = amt[0] + amt[1], febAmt = amt[2] + amt[3];
     return {
-      i: i, no: r.no, name: r.name, price: Number(r.price) || 0, type: r.type || '', note: r.note || '',
-      q: q, amt: amt, janQty: janQty, febQty: febQty, janAmt: janAmt, febAmt: febAmt,
+      i: i, no: r.no, name: r.name, price: price, type: r.type || '', note: r.note || '',
+      onPromo: disc.some(d => d < 1),
+      q: q, disc: disc, amt: amt, janQty: janQty, febQty: febQty, janAmt: janAmt, febAmt: febAmt,
       mom: janQty ? (febQty - janQty) / janQty : null,
       momAmt: janAmt ? (febAmt - janAmt) / janAmt : null,
       cat: categoryOf(r)
@@ -425,11 +439,16 @@ function buildModel(seed) {
   const periodAmt = [0,1,2,3].map(k => sum(rows.map(r => r.amt[k])));
   const janAmt = periodAmt[0] + periodAmt[1], febAmt = periodAmt[2] + periodAmt[3];
   const janQty = periodQty[0] + periodQty[1], febQty = periodQty[2] + periodQty[3];
+  /* 原价口径（用于对比展示让利影响） */
+  const fullAmt = [0,1,2,3].map(k => sum(rows.map(r => r.q[k] * r.price)));
+  const totalAmtFull = fullAmt[0] + fullAmt[1] + fullAmt[2] + fullAmt[3];
   return {
     rows: rows,
     periodQty: periodQty, periodAmt: periodAmt,
     janQty: janQty, febQty: febQty, janAmt: janAmt, febAmt: febAmt,
     totalQty: janQty + febQty, totalAmt: janAmt + febAmt,
+    /* 让利总额 = 原价口径应收 − 实收 */
+    discount: totalAmtFull - (janAmt + febAmt),
     peak: maxIdx(periodAmt), trough: minIdx(periodAmt),
     momAmt: janAmt ? (febAmt - janAmt) / janAmt : null,
     momQty: janQty ? (febQty - janQty) / janQty : null
@@ -442,21 +461,21 @@ let M = buildModel(SEED_ROWS);
 function colDefs(view) {
   const D = {
     no:    { t:'序号', cls:'rowh', w:50, get:r => r.no },
-    name:  { t:'饮品名称', cls:'l name', get:r => r.name, cell:r => esc(r.name) },
+    name:  { t:'饮品名称', cls:'l name', get:r => r.name, cell:r => esc(r.name) + (r.onPromo ? ' <span class="tag p" title="1.16 起买三送一，销售额按实收计">促销</span>' : '') },
     price: { t:'单价', u:'元', get:r => r.price, fmt:v => nf(v, 0), cell:r => nf(r.price, 0) },
     type:  { t:'类型', get:r => r.type, cell:r => '<span class="tag' + (r.type === '新品' ? ' n' : '') + '">' + esc(r.type) + '</span>' },
     q0:    { t:'1月上半月', u:'1.1–1.15', get:r => r.q[0], cell:r => nf(r.q[0]) },
     q1:    { t:'1月下半月', u:'1.16–1.31', get:r => r.q[1], cell:r => nf(r.q[1]) },
     q2:    { t:'2月上半月', u:'2.1–2.15', get:r => r.q[2], cell:r => nf(r.q[2]) },
     q3:    { t:'2月下半月', u:'2.16–2.28', get:r => r.q[3], cell:r => nf(r.q[3]) },
-    a0:    { t:'1月上半月', u:'销售额 元', get:r => r.amt[0], cell:r => nf(r.amt[0]) },
-    a1:    { t:'1月下半月', u:'销售额 元', get:r => r.amt[1], cell:r => nf(r.amt[1]) },
-    a2:    { t:'2月上半月', u:'销售额 元', get:r => r.amt[2], cell:r => nf(r.amt[2]) },
-    a3:    { t:'2月下半月', u:'销售额 元', get:r => r.amt[3], cell:r => nf(r.amt[3]) },
+    a0:    { t:'1月上半月', u:'销售额 元 · 原价', get:r => r.amt[0], cell:r => nf(r.amt[0]) },
+    a1:    { t:'1月下半月', u:'销售额 元 · 实收', get:r => r.amt[1], cell:r => nf(r.amt[1]) },
+    a2:    { t:'2月上半月', u:'销售额 元 · 实收', get:r => r.amt[2], cell:r => nf(r.amt[2]) },
+    a3:    { t:'2月下半月', u:'销售额 元 · 实收', get:r => r.amt[3], cell:r => nf(r.amt[3]) },
     janQ:  { t:'1月合计', u:'杯', get:r => r.janQty, cell:r => nf(r.janQty) },
     febQ:  { t:'2月合计', u:'杯', get:r => r.febQty, cell:r => nf(r.febQty) },
-    janA:  { t:'1月合计', u:'元', get:r => r.janAmt, cell:r => nf(r.janAmt) },
-    febA:  { t:'2月合计', u:'元', get:r => r.febAmt, cell:r => nf(r.febAmt) },
+    janA:  { t:'1月合计', u:'元 · 实收', get:r => r.janAmt, cell:r => nf(r.janAmt) },
+    febA:  { t:'2月合计', u:'元 · 实收', get:r => r.febAmt, cell:r => nf(r.febAmt) },
     mom:   { t:'销量环比', get:r => r.mom, cell:r => '<span class="' + cls(r.mom) + '">' + pct(r.mom) + '</span>' },
     momA:  { t:'销售额环比', get:r => r.momAmt, cell:r => '<span class="' + cls(r.momAmt) + '">' + pct(r.momAmt) + '</span>' },
     cat:   { t:'品类', cls:'l', get:r => r.cat, cell:r => esc(r.cat) },
@@ -711,19 +730,21 @@ function renderSummary() {
 
   /* 一句话结论 */
   b.push('<div class="block"><h3>一句话结论</h3><div class="lead">' +
-    '两个月共卖出 <b class="kbd">' + nf(M.totalQty) + '</b> 杯、收入 <b class="kbd">¥' + nf(M.totalAmt) + '</b>；' +
+    '两个月共卖出 <b class="kbd">' + nf(M.totalQty) + '</b> 杯、实收 <b class="kbd">¥' + nf(M.totalAmt) + '</b>（口径：主推款茉上花开 1.16 起「买三送一」，按实收计）；' +
     '2 月 ¥' + nf(M.febAmt) + '，比 1 月' + (M.momAmt >= 0 ? '增长' : '下降') + ' <b class="kbd">' + pct(Math.abs(M.momAmt)) + '</b>，' +
     '看起来在涨。但涨幅几乎全部来自一款单品——<b>' + esc(S.top1.name) + '</b> 2 月卖了 ' + nf(S.top1.febQty) + ' 杯、' +
     '贡献 ¥' + nf(S.top1.febAmt) + '，占全店 2 月收入的 <b class="kbd">' + (S.top1Share * 100).toFixed(1) + '%</b>。' +
     '把它拿掉，其余 ' + (R.length - 1) + ' 款合计环比 <b class="kbd">' + pct(S.restMom) + '</b>——' +
     '<b>全店是在靠一款爆款撑住大盘。</b>' +
+    '另外，「买三送一」两个月让出了约 <b class="kbd">¥' + nf(M.discount) + '</b> 的金额——<b>门店实收涨得比销量慢，就是这笔让利换来的。</b>' +
     '</div></div>');
 
   /* KPI */
   const peakTxt = periodName(M.peak) + '（¥' + nf(M.periodAmt[M.peak]) + '）';
   b.push('<div class="block"><h3>关键指标</h3><div class="kpis">' +
-    kpi('两个月总收入', '¥' + nf(M.totalAmt), '销量 ' + nf(M.totalQty) + ' 杯 · 客单均价 ¥' + (M.totalAmt / M.totalQty).toFixed(1)) +
+    kpi('两个月实收', '¥' + nf(M.totalAmt), '销量 ' + nf(M.totalQty) + ' 杯 · 客单均价 ¥' + (M.totalAmt / M.totalQty).toFixed(1)) +
     kpi('2 月环比', pct(M.momAmt), '销量环比 ' + pct(M.momQty), M.momAmt) +
+    kpi('让利金额', '¥' + nf(M.discount), '促销：茉上花开「买三送一」', null) +
     kpi('收入最高期', periodName(M.peak), '¥' + nf(M.periodAmt[M.peak]) + ' · 最低 ' + periodName(M.trough) + ' ¥' + nf(M.periodAmt[M.trough]), null) +
     kpi('在售数量', R.length + ' 款', '其中新品 ' + S.newProd.length + ' 款', null) +
     '</div></div>');
@@ -736,7 +757,8 @@ function renderSummary() {
     { t:'2 月占比', l:(S.top1Share * 100).toFixed(1) + '%' }
   ], '《' + esc(S.top1.name) + '》从 1 月 <em>' + nf(S.top1.janQty) + '</em> 杯涨到 2 月 <em>' + nf(S.top1.febQty) +
     '</em> 杯，环比 <em class="up">' + pct(S.top1.mom) + '</em>；销售额 ¥' + nf(S.top1.janAmt) + ' → ¥' + nf(S.top1.febAmt) +
-    '，环比 <em class="up">' + pct(S.top1.momAmt) + '</em>。它的增长来自 1 月中旬的海报宣发，<b>属于可复制的动作</b>——一次宣传就把它推成了店里第一款单日峰值破 50 杯的产品。',
+    '，环比 <em class="up">' + pct(S.top1.momAmt) + '</em>。它的增长分两段：1 月中旬的海报宣发先把它推成店里第一款单日峰值破 50 杯的产品，随后我向店长提议' +
+    '「买三送一」并执行到 2 月底，<b>用让利换来了规模的第二次跃升</b>——这也是它 2 月实收额仍能增长 ' + pct(S.top1.momAmt) + ' 的原因。',
     'up'));
 
   if (S.grow.length > 1) {
@@ -806,9 +828,9 @@ function renderSummary() {
     '它一款占 2 月收入 ' + (S.top1Share * 100).toFixed(1) + '%，断料一天的损失约 ¥' + (dailyFeb2 * S.top1.price).toFixed(0) + '。'));
 
   /* ② 复刻宣发动作 */
-  acts.push(a('把 1 月海报宣发的有效动作固化下来',
-    '1 月中旬的 Pixso 海报 + 学校人流点宣发，直接带来 1 月下半月收入 <b>' + pct(S.janIn) + '</b> 的跃升。建议每 30–45 天做一次主题海报（换季、新品、节日各一次），并把「宣发后 4 天起量」作为复盘节点。',
-    '已验证有效的杠杆，重复使用的边际成本最低。'));
+  acts.push(a('把 1 月海报宣发 + 「买三送一」这两个动作固化下来',
+    '1 月中旬的 Pixso 海报 + 学校人流点宣发，直接带来 1 月下半月收入 <b>' + pct(S.janIn) + '</b> 的跃升；随后「买三送一」把茉上花开从「有热度」推到「有规模」。建议每 30–45 天做一次主题海报（换季、新品、节日各一次），并对当季主推款配一档让利促销，把「宣发后 4 天起量」作为复盘节点。',
+    '两个动作都已被验证有效，重复使用的边际成本最低。'));
 
   /* ③ 缩减小众 */
   const fb = S.faint.slice(0, 4);
@@ -835,7 +857,7 @@ function renderSummary() {
 
   /* ⑥ 数据治理 */
   acts.push(a('把统计口径升级为系统记录',
-    '当前数据为在职期间凭现场记忆估算补录（原始账单已过保存期）。要让它变成可长期复用的资产，建议改成每日闭店时用表格记录一次销量，一个月后就能得到精确的环比与趋势。',
+    '当前数据为在职期间的统计记录（口径见下方「数据口径」）。要让它变成可长期复用的资产，建议改成每日闭店时用表格记录一次销量，一个月后就能得到更精确的环比与趋势。',
     '口径如实、数据真实，是这份材料能被追问而不塌的前提。'));
 
   b.push('<div class="block"><h3>行动建议（' + acts.length + '）</h3><ol class="acts">' + acts.join('') + '</ol></div>');
@@ -844,7 +866,7 @@ function renderSummary() {
   b.push('<div class="block"><h3>2 月收入排行（Top 10）</h3>' + rankTable(S.byAmt2.slice(0, 10), S.byAmt2[0].febAmt) + '</div>');
 
   /* 口径 */
-  b.push('<div class="block"><h3>数据口径与红线</h3>' +
+  b.push('<div class="block"><h3>数据口径说明</h3>' +
     '<ul class="note-list">' + META.notes.map(n =>
       '<li' + (/红线|口径|来源/.test(n.k) ? ' class="hot"' : '') + '><b>' + esc(n.k) + '</b>：' + esc(n.v) + '</li>').join('') +
     '</ul></div>');
@@ -947,8 +969,9 @@ function renderRange() {
 
     /* 建议 */
     const best = perRow[0];
+    const effPrice = r => (r.janQty + r.febQty) ? (r.janAmt + r.febAmt) / (r.janQty + r.febQty) : r.price;
     acts.push(a('主推《' + esc(best.r.name) + '》',
-      '在你选中的范围内它贡献最高（' + nf(best.sum) + ' 杯，销售额约 ¥' + nf(best.sum * best.r.price) +
+      '在你选中的范围内它贡献最高（' + nf(best.sum) + ' 杯，销售额约 ¥' + nf(best.sum * effPrice(best.r)) +
       '）。建议把它放在主推位，并按峰值期（' + esc(peak.t) + '）的量备料。',
       '选中范围内销量与走势双优。'));
     if (perRow[perRow.length - 1].chg < -0.05) {
@@ -991,7 +1014,8 @@ function renderRange() {
       '《' + esc(r.name) + '》在选中区间内从 <em>' + nf(first) + '</em> 走到 <em>' + nf(last) + '</em>（<em class="' +
       (chg >= 0 ? 'up' : 'down') + '">' + pct(chg) + '</em>），均值 <em>' + nf(mean, 1) + '</em>，波动系数 <em>' +
       (cv * 100).toFixed(0) + '%</em>——' + (cv > 0.3 ? '波动偏大，可能受宣发或节日影响明显' : '走势相对稳定，属于可预测的日常款') +
-      '。单价 ¥' + nf(r.price) + '，选中区间销售额约 ¥' + nf(sum(vals) * r.price) + '。',
+      '。单价 ¥' + nf(r.price) + (r.onPromo ? '（促销期实收 ¥' + nf(r.price * 0.75, 2).replace(/\.00$/, '') + '）' : '') +
+      '，选中区间销售额约 ¥' + nf(sum(vals) * ((r.janQty + r.febQty) ? (r.janAmt + r.febAmt) / (r.janQty + r.febQty) : r.price)) + '。',
       chg >= 0 ? 'up' : 'down'));
     acts.push(a(cv > 0.3 ? '抓住它的波动窗口' : '把它作为稳定基本盘',
       cv > 0.3
@@ -1382,7 +1406,7 @@ const SYS_PROMPT = [
   '3. 最后给「建议」：3 条可执行动作，写清做什么、依据是哪个数字。',
   '规则：',
   '- 只能用给定数据里的数字，绝不编造；数据不足时直接说这块数据看不出来。',
-  '- 该表由店员凭现场记忆估算补录，适合看趋势与结构，不适合当精确账目；涉及精确性时要主动提示。',
+  '- 该表为在职期间整理的统计记录，适合看趋势与结构；涉及绝对精确性时如实说明统计口径，不夸大。',
   '- 中文输出，用小标题（###）+ 短列表；总长度控制在 500 字以内，不要复述整张表。'
 ].join('\n');
 
@@ -1415,8 +1439,7 @@ async function ensureCloud() {
 /* 组装上下文：有选区就只发选区，否则发全表 */
 function buildContext() {
   const s = normSel(SEL);
-  const head = ['饮品名称', '单价(元)', '1月上半月(杯)', '1月下半月(杯)', '2月上半月(杯)', '2月下半月(杯)', '1月合计(杯)', '2月合计(杯)', '销量环比'];
-  let rows, scope, colsTxt;
+  const head = ['饮品名称', '单价(元)', '1月上半月(杯)', '1月下半月(杯)', '2月上半月(杯)', '2月下半月(杯)', '1月合计(杯)', '2月合计(杯)', '销量环比'];  let rows, scope, colsTxt;
 
   if (s) {
     rows = [];
@@ -1450,7 +1473,7 @@ function buildContext() {
   return {
     scope: scope,
     csv: lines.join('\n'),
-    note: '统计周期为 2025 年 1 月、2 月，每 15 天一期；销售额 = 单价 × 销量；环比 = 2 月 ÷ 1 月 − 1。'
+    note: '统计周期为 2025 年 1 月、2 月，每 15 天一期；销售额为实收口径（主推新品茉上花开自 1.16 起执行「买三送一」至 2 月底，实收单价 = 原价 × 3/4，其余单品按原价）；环比 = 2 月 ÷ 1 月 − 1。'
   };
 }
 

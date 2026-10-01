@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>跨境电商投放测算模型 · 黄科斌</title>
+<style>
+  :root{
+    --bg:#ffffff; --panel:#F9FAFB; --card:#ffffff;
+    --line:#E5E7EB; --text:#111827; --muted:#6B7280;
+    --blue:#2563EB; --blue-bg:#EFF6FF;
+    --green:#16A34A; --green-bg:#F0FDF4;
+    --red:#DC2626; --red-bg:#FEF2F2;
+    --amber:#D97706; --amber-bg:#FFFBEB;
+    --purple:#7C3AED; --purple-bg:#F5F3FF;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    font-family:"Microsoft YaHei","PingFang SC",sans-serif;
+    background:#F3F4F6; color:var(--text); line-height:1.7;
+    padding:24px 16px 60px;
+  }
+  .wrap{max-width:1100px;margin:0 auto}
+  header{text-align:center;margin-bottom:8px}
+  h1{font-size:24px;font-weight:800;letter-spacing:.01em;line-height:1.35}
+  .sub{font-size:12.5px;color:var(--muted);margin-top:6px;line-height:1.7}
+  .sub b{color:var(--blue)}
+
+  .layout{display:grid;grid-template-columns:minmax(320px,1fr) 1.35fr;gap:18px;margin-top:22px;align-items:start}
+  @media(max-width:900px){.layout{grid-template-columns:1fr}}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 18px 16px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+  .card h2{font-size:14.5px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:7px}
+  .card h2 .dot{width:8px;height:8px;border-radius:50%;background:var(--blue);flex:none}
+  .card .hint{font-size:11px;color:var(--muted);margin-bottom:14px;line-height:1.6}
+
+  /* 参数区 */
+  .field{margin-bottom:15px}
+  .field .lbl{display:flex;justify-content:space-between;align-items:baseline;font-size:12.5px;margin-bottom:6px}
+  .field .lbl span:first-child{color:#374151;font-weight:600}
+  .field .val{font-family:"Consolas",monospace;font-size:13px;font-weight:700;color:var(--blue);background:var(--blue-bg);padding:1px 8px;border-radius:5px}
+  input[type=range]{width:100%;height:5px;-webkit-appearance:none;background:var(--line);border-radius:4px;outline:none;cursor:pointer}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--blue);cursor:pointer;border:2px solid #fff;box-shadow:0 1px 4px rgba(37,99,235,.4)}
+  .field .range-hint{display:flex;justify-content:space-between;font-size:10px;color:#9CA3AF;margin-top:3px}
+
+  .divider{height:1px;background:var(--line);margin:16px 0 14px}
+  .sec-title{font-size:11.5px;font-weight:700;color:var(--muted);letter-spacing:.06em;margin-bottom:11px}
+
+  /* 结果区 */
+  .kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+  .kpi{border:1px solid var(--line);border-radius:9px;padding:11px 13px;background:var(--panel)}
+  .kpi .k-lbl{font-size:11px;color:var(--muted);margin-bottom:4px}
+  .kpi .k-val{font-size:21px;font-weight:800;font-family:"Consolas",monospace;line-height:1.15}
+  .kpi .k-note{font-size:10px;color:#9CA3AF;margin-top:3px}
+  .kpi.big{grid-column:1 / -1}
+
+  .verdict{border-radius:9px;padding:12px 14px;margin-bottom:14px;font-size:12.5px;line-height:1.75}
+  .verdict .v-title{font-weight:800;font-size:13.5px;margin-bottom:5px}
+  .v-profit{background:var(--green-bg);border:1px solid #BBF7D0}
+  .v-profit .v-title{color:var(--green)}
+  .v-loss{background:var(--red-bg);border:1px solid #FECACA}
+  .v-loss .v-title{color:var(--red)}
+  .v-warn{background:var(--amber-bg);border:1px solid #FDE68A}
+  .v-warn .v-title{color:var(--amber)}
+
+  /* 瀑布式拆解 */
+  table{width:100%;border-collapse:collapse;margin-top:4px}
+  td,th{font-size:12px;padding:7px 9px;border-bottom:1px solid var(--line);text-align:left}
+  th{font-size:11px;color:var(--muted);font-weight:600;background:var(--panel)}
+  td.num{font-family:"Consolas",monospace;text-align:right;font-weight:600;white-space:nowrap}
+  tr.total td{border-top:2px solid var(--text);border-bottom:none;font-weight:800;font-size:13px}
+  .c-red{color:var(--red)} .c-green{color:var(--green)} .c-muted{color:var(--muted)}
+
+  /* 盈亏平衡可视化 */
+  .bar-wrap{margin-top:8px}
+  .bar{height:26px;border-radius:6px;background:var(--line);position:relative;overflow:hidden;display:flex}
+  .bar .seg{height:100%;display:flex;align-items:center;justify-content:center;font-size:10.5px;color:#fff;font-weight:700;transition:width .18s ease}
+  .seg.cost{background:#94A3B8}
+  .seg.ad{background:var(--amber)}
+  .seg.fee{background:#A78BFA}
+  .seg.profit{background:var(--green)}
+  .seg.loss{background:var(--red)}
+  .bar-legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:9px;font-size:10.5px;color:var(--muted)}
+  .bar-legend i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:4px;vertical-align:middle}
+
+  .footer-note{margin-top:22px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;font-size:12px;color:#374151;line-height:1.85}
+  .footer-note b{color:var(--text)}
+  .footer-note .tag{display:inline-block;background:var(--blue-bg);color:var(--blue);font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:5px;margin-right:6px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>跨境电商投放测算模型</h1>
+    <div class="sub">
+      作者：黄科斌 ｜ 2027 届<br>
+      拖动左侧任意参数，右侧 <b>ROAS、利润、盈亏平衡点</b> 实时重算 —— 演示"用数据管住投放"
+    </div>
+  </header>
+
+  <div class="layout">
+    <!-- ========== 左：参数 ========== -->
+    <div class="card">
+      <h2><span class="dot"></span>投放参数</h2>
+      <div class="hint">模型以一个 3C 配件独立站的单日投放为例</div>
+
+      <div class="sec-title">① 流量获取</div>
+      <div class="field">
+        <div class="lbl"><span>日广告预算</span><span class="val" id="v-budget">$500</span></div>
+        <input type="range" id="budget" min="50" max="3000" step="50" value="500">
+        <div class="range-hint"><span>$50</span><span>$3,000</span></div>
+      </div>
+      <div class="field">
+        <div class="lbl"><span>平均点击成本 CPC</span><span class="val" id="v-cpc">$1.20</span></div>
+        <input type="range" id="cpc" min="0.2" max="5" step="0.05" value="1.2">
+        <div class="range-hint"><span>$0.20</span><span>$5.00</span></div>
+      </div>
+
+      <div class="divider"></div>
+      <div class="sec-title">② 转化能力</div>
+      <div class="field">
+        <div class="lbl"><span>转化率 CVR</span><span class="val" id="v-cvr">3.4%</span></div>
+        <input type="range" id="cvr" min="0.5" max="10" step="0.1" value="3.4">
+        <div class="range-hint"><span>0.5%</span><span>10%</span></div>
+      </div>
+      <div class="field">
+        <div class="lbl"><span>平均客单价 AOV</span><span class="val" id="v-aov">$89.60</span></div>
+        <input type="range" id="aov" min="10" max="400" step="1" value="89.6">
+        <div class="range-hint"><span>$10</span><span>$400</span></div>
+      </div>
+
+      <div class="divider"></div>
+      <div class="sec-title">③ 成本结构</div>
+      <div class="field">
+        <div class="lbl"><span>采购成本率</span><span class="val" id="v-cogs">30%</span></div>
+        <input type="range" id="cogs" min="10" max="70" step="1" value="30">
+        <div class="range-hint"><span>10%</span><span>70%</span></div>
+      </div>
+      <div class="field">
+        <div class="lbl"><span>头程物流（单件）</span><span class="val" id="v-ship">$3.00</span></div>
+        <input type="range" id="ship" min="0" max="20" step="0.5" value="3">
+        <div class="range-hint"><span>$0</span><span>$20</span></div>
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <div class="lbl"><span>退货率</span><span class="val" id="v-refund">5%</span></div>
+        <input type="range" id="refund" min="0" max="30" step="1" value="5">
+        <div class="range-hint"><span>0%</span><span>30%</span></div>
+      </div>
+    </div>
+
+    <!-- ========== 右：结果 ========== -->
+    <div>
+      <div class="card" style="margin-bottom:18px">
+        <h2><span class="dot"></span>实时测算结果</h2>
+        <div class="hint">所有数字随左侧参数同步更新</div>
+
+        <div class="kpi-grid">
+          <div class="kpi"><div class="k-lbl">广告回报率 ROAS</div><div class="k-val" id="r-roas">—</div><div class="k-note" id="r-roas-note">—</div></div>
+          <div class="kpi"><div class="k-lbl">日订单量</div><div class="k-val" id="r-orders">—</div><div class="k-note" id="r-clicks">—</div></div>
+          <div class="kpi"><div class="k-lbl">日营业额</div><div class="k-val" id="r-rev">—</div><div class="k-note">Gross Revenue</div></div>
+          <div class="kpi"><div class="k-lbl">日净利润</div><div class="k-val" id="r-profit">—</div><div class="k-note" id="r-margin">—</div></div>
+          <div class="kpi big"><div class="k-lbl">盈亏平衡 ROAS（投放到此值=不赚不亏）</div><div class="k-val" id="r-breakeven">—</div><div class="k-note" id="r-gap">—</div></div>
+        </div>
+
+        <div class="bench" style="font-size:11px;color:#6B7280;background:#F3F4F6;border-radius:7px;padding:8px 11px;margin-bottom:13px;line-height:1.75">
+          <b style="color:#111827">行业参考值：</b>3C 独立站成熟期 ROAS 约 3.0–4.0；净利率 <b>8%–15%</b> 算健康；独立站 CVR 约 2%–4%；行业退货率约 5%–15%。
+        </div>
+
+        <div id="verdict" class="verdict v-warn">
+          <div class="v-title" id="v-title">—</div>
+          <div id="v-body">—</div>
+        </div>
+
+        <div class="bar-wrap">
+          <div class="sec-title" style="margin-bottom:7px">单日营业额去向拆解（按占比）</div>
+          <div class="bar">
+            <div class="seg cost" id="seg-cost" style="width:0%"></div>
+            <div class="seg ad" id="seg-ad" style="width:0%"></div>
+            <div class="seg fee" id="seg-fee" style="width:0%"></div>
+            <div class="seg profit" id="seg-profit" style="width:0%"></div>
+            <div class="seg loss" id="seg-loss" style="width:0%"></div>
+          </div>
+          <div class="bar-legend">
+            <span><i style="background:#94A3B8"></i>采购+物流+退货</span>
+            <span><i style="background:#D97706"></i>广告费</span>
+            <span><i style="background:#A78BFA"></i>支付手续费</span>
+            <span><i style="background:#16A34A"></i>净利润</span>
+            <span><i style="background:#DC2626"></i>亏损</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2><span class="dot"></span>单日损益明细</h2>
+        <div class="hint">每一笔钱从哪来、到哪去</div>
+        <table>
+          <tr><th>科目</th><th style="text-align:right">金额</th><th style="text-align:right">占营业额</th></tr>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-note">
+    <p><span class="tag">这份模型在证明什么</span></p>
+    <p><b>1. 投放不是"砸钱买流量"，而是一场四个变量的精密平衡。</b>CPC、CVR、AOV、成本率，任何一个恶化，整盘生意就可能从赚钱变亏钱。</p>
+    <p><b>2. 盈亏平衡 ROAS 是操盘手的红线。</b>当实际 ROAS 低于这条线，投放就是在烧钱——而判断这条线在哪，靠的不是感觉，是算出来的。</p>
+    <p><b>3. 我在门店做过同一件事。</b>茶之都主推新品"买三送一"，我是先算清让利 ¥1,866 能换来多少销量增量（实际 +76%、占比 13.8%→22.8%），再决定执行——<b>本质就是这套测算逻辑的线下版</b>：用可量化的投入，换可衡量的产出。</p>
+  </div>
+</div>
+
+<script>
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  var ids = ['budget','cpc','cvr','aov','cogs','ship','refund'];
+  var P = {};
+  var FEE_RATE = 0.029, FEE_FIX = 0.30;   // 支付通道费
+
+  function fmt(n, d){
+    d = (d === undefined) ? 2 : d;
+    return '$' + Number(n).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
+  }
+  function pct(n){ return n.toFixed(1) + '%'; }
+
+  function read(){
+    ids.forEach(function(k){ P[k] = parseFloat($(k).value); });
+  }
+
+  function calc(){
+    read();
+    var budget=P.budget, cpc=P.cpc, cvr=P.cvr/100, aov=P.aov,
+        cogsRate=P.cogs/100, ship=P.ship, refundRate=P.refund/100;
+
+    var clicks = budget / cpc;
+    var orders = clicks * cvr;
+    var rev    = orders * aov;
+
+    // 成本
+    var cogs   = rev * cogsRate;
+    var shipC  = orders * ship;
+    var fee    = rev * FEE_RATE + orders * FEE_FIX;
+    var refund = rev * refundRate;           // 退货造成的直接损失(简化:按退货率×营业额)
+    var ad     = budget;
+
+    var totalCost = cogs + shipC + fee + refund + ad;
+    var profit = rev - totalCost;
+
+    var roas = (ad > 0) ? (rev / ad) : 0;
+
+    // 盈亏平衡 ROAS：使 profit=0
+    // profit = rev - rev*cogsRate - orders*ship - rev*FEE_RATE - orders*FEE_FIX - rev*refundRate - budget
+    // 设 rev = k*budget, orders = k*budget/aov
+    // profit = k*budget - k*budget*cogsRate - (k*budget/aov)*ship - k*budget*FEE_RATE - (k*budget/aov)*FEE_FIX - k*budget*refundRate - budget = 0
+    // => k*[1 - cogsRate - FEE_RATE - refundRate - (ship+FEE_FIX)/aov] = 1
+    var denom = 1 - cogsRate - FEE_RATE - refundRate - (ship + FEE_FIX) / aov;
+    var breakeven = (denom > 0) ? (1 / denom) : Infinity;
+
+    // 输出
+    $('v-budget').textContent = fmt(budget,0);
+    $('v-cpc').textContent    = fmt(cpc,2);
+    $('v-cvr').textContent    = P.cvr.toFixed(1) + '%';
+    $('v-aov').textContent    = fmt(aov,2);
+    $('v-cogs').textContent   = P.cogs + '%';
+    $('v-ship').textContent   = fmt(ship,2);
+    $('v-refund').textContent = P.refund + '%';
+
+    $('r-roas').textContent   = roas.toFixed(2);
+    $('r-orders').textContent = orders.toFixed(1);
+    $('r-clicks').textContent = Math.round(clicks).toLocaleString() + ' 次点击';
+    $('r-rev').textContent    = fmt(rev,0);
+    $('r-profit').textContent = (profit>=0?'':'−') + fmt(Math.abs(profit),0);
+
+    var margin = rev>0 ? (profit/rev*100) : 0;
+    $('r-margin').textContent = '净利率 ' + margin.toFixed(1) + '%';
+
+    var beTxt = (breakeven===Infinity) ? '无法盈利' : breakeven.toFixed(2);
+    $('r-breakeven').textContent = beTxt;
+
+    var gap = roas - breakeven;
+    if (breakeven !== Infinity){
+      if (gap >= 0){
+        $('r-gap').textContent = '当前 ROAS 高于平衡线 ' + gap.toFixed(2) + ' → 安全垫 ' + ((gap/breakeven)*100).toFixed(0) + '%';
+      } else {
+        $('r-gap').textContent = '当前 ROAS 低于平衡线 ' + Math.abs(gap).toFixed(2) + ' → 投放亏损';
+      }
+    } else {
+      $('r-gap').textContent = '成本结构过高，投放无法盈利';
+    }
+
+    // 判定
+    var vd=$('verdict'), vt=$('v-title'), vb=$('v-body');
+    var beTaker = function(x){ return x.toFixed(2); };
+    vd.className = 'verdict';
+    if (breakeven === Infinity){
+      vd.className += ' v-loss';
+      vt.textContent = '🔴 结构性亏损：无论怎么投都不赚钱';
+      vb.innerHTML = '采购成本率 + 支付手续费 + 退货率 + 单件固定成本 已经吃掉了全部售价空间。' +
+                     '此时唯一的出路是<b>换品或改成本结构</b>，而不是加预算。';
+    } else if (roas >= breakeven * 1.3){
+      vd.className += ' v-profit';
+      vt.textContent = '🟢 健康盈利：投放有安全垫';
+      vb.innerHTML = '当前 ROAS <b>' + roas.toFixed(2) + '</b>，平衡线 <b>' + beTaker(breakeven) + '</b>，' +
+                     '安全垫约 <b>' + ((gap/breakeven)*100).toFixed(0) + '%</b>。' +
+                     '这个状态下可以考虑<b>加预算放量</b>——但要盯住：放量后 CPC 通常会上涨。';
+    } else if (roas >= breakeven){
+      vd.className += ' v-warn';
+      vt.textContent = '🟡 微利：能投但没余量';
+      vb.innerHTML = 'ROAS <b>' + roas.toFixed(2) + '</b> 只比平衡线 <b>' + beTaker(breakeven) + '</b> 高一点点。' +
+                     '此时<b>不能盲目加预算</b>，应该优先优化转化率 CVR 或客单价 AOV，把安全垫做厚。';
+    } else {
+      vd.className += ' v-loss';
+      vt.textContent = '🔴 亏损中：投得越多亏得越多';
+      vb.innerHTML = 'ROAS <b>' + roas.toFixed(2) + '</b> 低于平衡线 <b>' + beTaker(breakeven) + '</b>。' +
+                     '三个可调方向：<b>① 提转化率 ② 提客单价 ③ 压 CPC</b>。' +
+                     '继续加预算只会放大亏损。';
+    }
+
+    // 条形图
+    var parts = [
+      ['seg-cost',   cogs + shipC + refund],
+      ['seg-ad',     ad],
+      ['seg-fee',    fee],
+      ['seg-profit', profit > 0 ? profit : 0],
+      ['seg-loss',   profit < 0 ? -profit : 0]
+    ];
+    var scaleBase = Math.max(rev, totalCost);
+    parts.forEach(function(p){
+      var w = scaleBase>0 ? (p[1]/scaleBase*100) : 0;
+      $(p[0]).style.width = w.toFixed(2) + '%';
+    });
+
+    // 明细表
+    var rows = [
+      ['营业收入',                 rev,      false],
+      ['− 采购成本（'+P.cogs+'%）', -cogs,   false],
+      ['− 头程物流',               -shipC,  false],
+      ['− 支付手续费（2.9%+$0.3）', -fee,    false],
+      ['− 退货损失（'+P.refund+'%）', -refund, false],
+      ['− 广告投放',               -ad,     false]
+    ];
+    var html = '';
+    rows.forEach(function(r,i){
+      html += '<tr><td>' + r[0] + '</td>' +
+              '<td class="num">' + (r[1]>=0?'':'−') + fmt(Math.abs(r[1]),2) + '</td>' +
+              '<td class="num c-muted">' + (rev>0 ? (Math.abs(r[1])/rev*100).toFixed(1)+'%' : '—') + '</td></tr>';
+    });
+    html += '<tr class="total"><td>净利润</td>' +
+            '<td class="num ' + (profit>=0?'c-green':'c-red') + '">' + (profit>=0?'':'−') + fmt(Math.abs(profit),2) + '</td>' +
+            '<td class="num ' + (profit>=0?'c-green':'c-red') + '">' + margin.toFixed(1) + '%</td></tr>';
+    $('tbody').innerHTML = html;
+  }
+
+  ids.forEach(function(k){
+    $(k).addEventListener('input', calc);
+  });
+  calc();
+})();
+</script>
+</body>
+</html>
