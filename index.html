@@ -103,6 +103,14 @@
   .vr-play{width:58px;height:58px;border-radius:50%;background:rgba(245,242,236,.94);color:#141414;display:flex;align-items:center;justify-content:center;font-size:19px;padding-left:4px;box-shadow:0 10px 30px rgba(0,0,0,.45)}
   .vr-enter > span:last-child{font-size:13px;font-weight:700;color:#f5f2ec;background:rgba(0,0,0,.5);padding:7px 16px;border-radius:999px;letter-spacing:.5px}
   .vr-frame{width:100%;display:block;border:0;aspect-ratio:1920/880;background:#000}
+  /* VR 卡片：标题旁的声音开关（跨域限制下，暂停音乐 = 收起全景） */
+  .vr-sound{appearance:none;-webkit-appearance:none;border:1px solid #2c2c33;background:#141418;color:#c9c9cf;
+    width:30px;height:30px;border-radius:50%;font-size:13px;line-height:1;cursor:pointer;flex:none;
+    display:inline-flex;align-items:center;justify-content:center;padding:0;
+    transition:border-color .2s ease,color .2s ease,background .2s ease}
+  .vr-sound:hover{border-color:#4a4a52;color:#fff}
+  .vr-sound.is-on{background:#26262c;color:#f0f0f2}
+  .card h3 .vr-sound{margin-left:auto}
   .card .body{padding:22px 24px 26px}
   .card h3{font-size:20px;font-weight:800}
   .card p{color:var(--muted);font-size:14.5px;margin-top:10px}
@@ -381,8 +389,8 @@
           <div class="vr-enter"><span class="vr-play">▶</span><span>进入实时全景 · 拖拽环视</span></div>
         </div>
         <div class="body">
-          <h3>360° VR 全景 · 侗绣虚拟展厅</h3>
-          <p>基于全景平台制作的侗绣展厅虚拟展示，绣品、银饰与织锦场景可拖拽环视，在线即可走进侗绣空间（进入后自动播放展厅背景音乐，可在播放器内关闭）。</p>
+          <h3 style="display:flex;align-items:center;gap:10px">360° VR 全景 · 侗绣虚拟展厅<span class="vr-sound" id="vrSoundBtn" role="button" tabindex="0" title="进入全景后点此暂停背景音乐" aria-label="暂停或恢复全景背景音乐">🔊</span></h3>
+          <p>基于全景平台制作的侗绣展厅虚拟展示，绣品、银饰与织锦场景可拖拽环视，在线即可走进侗绣空间（进入后自动播放展厅背景音乐，点标题旁的声音图标即可暂停）。</p>
           <div class="qr-row">
             <div><a class="linkline" href="https://vr.om.cn/view/973494" target="_blank" rel="noopener">在线体验 →</a></div>
             <div><img class="qr" src="assets/qr-vr.png" alt="VR 全景二维码"><div class="cap">扫码进入全景展厅</div></div>
@@ -993,11 +1001,28 @@
     var m = doc.getElementById('vrMedia');
     if(!m || m.dataset.vrBound) return;
     m.dataset.vrBound = '1';
-    m.addEventListener('click', function(){
+    var SRC = 'https://vr.om.cn/view/973494';
+    var btn = doc.getElementById('vrSoundBtn');
+    function enter(){
       if(m.querySelector('iframe')) return;
       m.style.cursor = 'default';
-      m.innerHTML = '<iframe class="vr-frame" src="https://vr.om.cn/view/973494" title="360 度 VR 全景 · 侗绣虚拟展厅" allow="autoplay; fullscreen; xr-spatial-tracking" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>';
-    });
+      m.innerHTML = '<iframe class="vr-frame" src="' + SRC + '" title="360 度 VR 全景 · 侗绣虚拟展厅" allow="autoplay; fullscreen; xr-spatial-tracking" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>';
+      if(btn){ btn.classList.add('is-on'); btn.textContent = '\uD83D\uDD0A'; btn.title = '点击暂停背景音乐（收起全景）'; }
+    }
+    function exit(){
+      m.style.cursor = 'pointer';
+      m.innerHTML = '<img src="assets/panorama.jpg" alt="360 度 VR 全景展厅"><div class="vr-enter"><span class="vr-play">\u25B6</span><span>进入实时全景 · 拖拽环视</span></div>';
+      if(btn){ btn.classList.remove('is-on'); btn.textContent = '\uD83D\uDD07'; btn.title = '背景音乐已暂停 · 点击重新进入全景'; }
+    }
+    m.addEventListener('click', enter);
+    if(btn){
+      btn.addEventListener('click', function(){
+        if(m.querySelector('iframe')){ exit(); } else { enter(); }
+      });
+      btn.addEventListener('keydown', function(e){
+        if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); btn.click(); }
+      });
+    }
   })();
 
   /* ---------- 10. AI 分析台：全屏试用弹层（首次点击才加载，不拖慢首页） ---------- */
