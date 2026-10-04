@@ -16,6 +16,7 @@
   }
   *{margin:0;padding:0;box-sizing:border-box}
   html{scroll-behavior:smooth}
+  [id]{scroll-margin-top:76px}
   body{background:var(--bg);color:var(--text);font-family:"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif;line-height:1.7;overflow-x:hidden}
   a{color:inherit;text-decoration:none}
   img{max-width:100%;display:block}
@@ -149,7 +150,7 @@
   .sales-col .ai-demo video{display:block;width:100%;aspect-ratio:16/9;background:#000}
   .sales-col .ai-note{margin:16px 2px 0;font-size:18px;line-height:1.85;color:var(--text)}
 
-  /* 智能分析台试用入口 + 全屏试用弹层 */
+  /* AI智能分析台试用入口 + 全屏试用弹层 */
   .ai-try{margin-top:20px}
   .ai-try-btn{width:100%;display:flex;align-items:center;gap:14px;text-align:left;cursor:pointer;font-family:inherit;
     border:1px solid rgba(194,69,88,.5);border-radius:12px;padding:15px 18px;color:#fff;
@@ -260,10 +261,12 @@
   <div class="wrap">
     <div class="logo"><span>HUANG KEBIN</span><i class="logo-sep" aria-hidden="true"></i><span class="logo-cn">个人作品集</span></div>
     <div class="nav-links">
-      <a href="#ecom" data-ap="up" style="--d:.4s;--y:-10px">电商作品</a>
-      <a href="#creative" data-ap="up" style="--d:.6s;--y:-10px">内容与奖项</a>
-      <a href="#growth" data-ap="up" style="--d:.7s;--y:-10px">成长路径</a>
-      <a href="https://github.com/littlemonster-huang" target="_blank" rel="noopener" data-ap="up" style="--d:.8s;--y:-10px">GitHub</a>
+      <a href="#ecom" data-ap="up" style="--d:.4s;--y:-10px">电子商务</a>
+      <a href="#data-driven" data-ap="up" style="--d:.5s;--y:-10px">数据驱动</a>
+      <a href="#creative" data-ap="up" style="--d:.6s;--y:-10px">创新思维</a>
+      <a href="#perfect" data-ap="up" style="--d:.7s;--y:-10px">追求极致</a>
+      <a href="#growth" data-ap="up" style="--d:.8s;--y:-10px">成长路径</a>
+      <a href="https://github.com/littlemonster-huang" target="_blank" rel="noopener" data-ap="up" style="--d:.9s;--y:-10px">GitHub</a>
     </div>
   </div>
 </nav>
@@ -293,10 +296,10 @@
     <div class="marquee-clip">
       <div class="marquee-track">
         <div class="marquee-group">
-          <span class="solid">E-COMMERCE</span><span>ROAS</span><span class="solid">CROSS-BORDER</span><span>DATA-DRIVEN</span><span class="solid">GROWTH</span>
+          <span class="solid">E-COMM</span><span>DATA-DRIVEN</span><span class="solid">ROAS</span><span>CREATIVE</span><span class="solid">PERFECT</span><span>GROWTH</span>
         </div>
         <div class="marquee-group" aria-hidden="true">
-          <span class="solid">E-COMMERCE</span><span>ROAS</span><span class="solid">CROSS-BORDER</span><span>DATA-DRIVEN</span><span class="solid">GROWTH</span>
+          <span class="solid">E-COMM</span><span>DATA-DRIVEN</span><span class="solid">ROAS</span><span>CREATIVE</span><span class="solid">PERFECT</span><span>GROWTH</span>
         </div>
       </div>
     </div>
@@ -316,7 +319,7 @@
   <div class="wrap">
     <div class="sec-head">
       <div class="sec-word" data-parallax="28"><span class="mask"><span>E-COMM</span></span></div>
-      <div class="sec-cn" data-reveal="fade" style="--d:.1s">跨境电商主线 · 竞品拆解 / 投放测算 / 独立站实操</div>
+      <div class="sec-cn" data-reveal="fade" style="--d:.1s">跨境电商 · 竞品拆解 / 投放测算 / 独立站实操</div>
     </div>
     <div class="grid" data-stagger>
       <div class="card" data-reveal>
@@ -350,9 +353,9 @@
         </div>
       </div>
         </div>
-    <div class="sec-head" style="margin-top:64px">
+    <div class="sec-head" id="data-driven" style="margin-top:64px">
       <div class="sec-word" data-parallax="28" style="font-size:clamp(34px,9vw,130px)"><span class="mask"><span>DATA-DRIVEN</span></span></div>
-      <div class="sec-cn" data-reveal="fade" style="--d:.1s">门店饮品销量增长实战 · 销售数据与智能分析台</div>
+      <div class="sec-cn" data-reveal="fade" style="--d:.1s">门店饮品销量增长实战 · 销售数据与AI智能分析台</div>
     </div>
     <div class="poster-grid" data-stagger>
       <a href="assets/chazhifu-flyer.png" target="_blank" rel="noopener" data-zoom data-reveal><img src="assets/chazhifu-flyer.png" alt="茶之都门店宣传单（茉上花开 · 强烈推荐）" loading="lazy"></a>
@@ -366,7 +369,7 @@
         <div class="ai-try" data-reveal>
           <button class="ai-try-btn" id="aiTryBtn" type="button">
             <span class="ai-try-play">▶</span>
-            <span class="ai-try-txt">打开 智能分析台 · 现场试用
+            <span class="ai-try-txt">打开 AI智能分析台 · 现场试用
               <em>框选表格任意区域或直接提问，AI 实时生成深度解读与下月备货建议</em>
             </span>
           </button>
@@ -418,21 +421,6 @@
           </div>
         </div>
       </div>
-      <div class="card" data-reveal>
-        <div class="media"><video controls playsinline preload="metadata" poster="assets/poster-milktea.jpg" src="assets/milktea-miniprogram.mp4"></video></div>
-        <div class="body">
-          <h3>科斌小工具 · 点单小程序</h3>
-          <p>完整自助点单链路：菜单浏览、规格选择（冰量/糖度/加料）、购物车与下单。个人主体注册，已通过实名认证与 ICP 备案审核，微信内搜索即可使用。</p>
-          <div class="tags"><span class="tag">云开发</span><span class="tag">点单链路</span><span class="tag">备案合规</span><span class="tag tag-status">已备案上线 · 可搜索使用</span></div>
-        </div>
-      </div>
-      <div class="card" data-reveal>
-        <div class="media"><video controls playsinline preload="metadata" poster="assets/poster-dongxiu.jpg" src="assets/dongxiu-miniprogram.mp4"></video></div>
-        <div class="body">
-          <h3>云丝侗韵 · 非遗侗绣小程序</h3>
-          <p>非遗科普小程序：侗绣起源、九图绣片集、四针法拆解、工艺与成品展示四大板块，23 张绣片与原创文案全部结构化呈现。</p>
-          <div class="tags"><span class="tag">原生小程序</span><span class="tag">分包加载</span><span class="tag">fs 视频方案</span><span class="tag tag-status">开发完成 · 备案进行中</span></div>
-        </div>
       </div>
     </div>
     <div class="awards" data-stagger>
@@ -455,7 +443,24 @@
         <a class="cert" href="assets/award-honglv.jpg" target="_blank" rel="noopener" data-zoom><img src="assets/award-honglv.jpg" alt="中国国际大学生创新大赛红旅赛道校级铜奖获奖证书" loading="lazy"></a>
       </div>
     </div>
+        <div class="grid" data-stagger style="margin-top:56px">
+      <div class="card" data-reveal>
+        <div class="media"><video controls playsinline preload="metadata" poster="assets/poster-milktea.jpg" src="assets/milktea-miniprogram.mp4"></video></div>
+        <div class="body">
+          <h3>科斌小工具 · 点单小程序</h3>
+          <p>完整自助点单链路：菜单浏览、规格选择（冰量/糖度/加料）、购物车与下单。个人主体注册，已通过实名认证与 ICP 备案审核，微信内搜索即可使用。</p>
+          <div class="tags"><span class="tag">云开发</span><span class="tag">点单链路</span><span class="tag">备案合规</span><span class="tag tag-status">已备案上线 · 可搜索使用</span></div>
+        </div>
       </div>
+      <div class="card" data-reveal>
+        <div class="media"><video controls playsinline preload="metadata" poster="assets/poster-dongxiu.jpg" src="assets/dongxiu-miniprogram.mp4"></video></div>
+        <div class="body">
+          <h3>云丝侗韵 · 非遗侗绣小程序</h3>
+          <p>非遗科普小程序：侗绣起源、九图绣片集、四针法拆解、工艺与成品展示四大板块，23 张绣片与原创文案全部结构化呈现。</p>
+          <div class="tags"><span class="tag">原生小程序</span><span class="tag">分包加载</span><span class="tag">fs 视频方案</span><span class="tag tag-status">开发完成 · 备案进行中</span></div>
+        </div>
+    </div>
+  </div>
 </section>
 
 <!-- PERFECT -->
@@ -506,12 +511,12 @@
       <div class="t-item" data-reveal><div class="t-body"><div class="yr">2025.03</div><h4>探索视频剪辑，产出转场踩点视频</h4><p>自行探索 Pr、AE、剪映等视频剪辑软件制作短视频，完成片头包装、转场踩点、节奏卡点，需要时可以提供对应作品。</p></div><a class="tev" href="assets/growth-edit.jpg" data-zoom><img src="assets/growth-edit.jpg" alt="剪映剪辑侗绣宣传视频的时间线现场" loading="lazy"></a></div>
       <div class="t-item" data-reveal><div class="t-body"><div class="yr">2025.04 – 05</div><h4>自学 Pixso，独立产出完整网站（内容与视觉素材生产）</h4><p>学习并应用 Pixso 独立完成非遗侗绣网站：从结构规划到图文与视觉素材全部自己产出。这套「内容 + 素材自产」能力可直接迁移到电商主图、详情页与广告素材。</p></div><a class="tev" href="assets/growth-pixso.png" data-zoom><img src="assets/growth-pixso.png" alt="Pixso 中非遗侗绣网站的四页面组件化设计稿" loading="lazy"></a></div>
       <div class="t-item" data-reveal><div class="t-body"><div class="yr">2026 夏</div><h4>引入 360° VR 全景，非遗观赏沉浸式升级</h4><p>打造 360° VR 全景沉浸式线上观赏体验，为非遗的活态传播与文创赋能探索一条新路径。</p></div><a class="tev" href="assets/growth-vr.jpg" data-zoom><img src="assets/growth-vr.jpg" alt="360° VR 全景侗绣展馆沉浸式观赏场景" loading="lazy"></a></div>
-      <div class="t-item" data-reveal><div class="t-body"><div class="yr">2026 夏</div><h4>系统补齐 AI 工具链，两个小程序从 0 到 1</h4><p>用 AI 辅助开发云丝侗韵小程序与科斌饮品点单助手，两个小程序从 0 到 1 开发完成（需求梳理 → 开发 → 备案上线全流程自己跑通）。</p></div><a class="tev" href="assets/growth-miniapps.jpg" data-zoom><img src="assets/growth-miniapps.jpg" alt="云丝侗韵与科斌点单两个小程序的运行界面" loading="lazy"></a></div>
-      <div class="t-item" data-reveal><div class="t-body"><div class="yr">2026.09</div><h4>开源平台学习并实操版本管理及 AI 项目探索</h4><p>一周上手 GitHub，独立完成账号注册、SSH 密钥配置、仓库推送与首次 README 编写，后续持续提交优化；借助开源社区研读 AI 项目，拓展前沿技术认知。</p></div><a class="tev" href="assets/growth-github.jpg" data-zoom><img src="assets/growth-github.jpg" alt="GitHub 开源社区浏览与学习现场" loading="lazy"></a></div>
-      <div class="t-item" data-reveal><div class="t-body"><div class="yr">2026.09</div><h4>为销量台账接入 AI：Excel 从记录工具变成决策助手</h4><p>给门店销量台账接入 AI 大模型：可对话提问、框选即分析、按历史销量给出下月备货预估，把原本逐行翻表的复盘压缩到秒级。这正是我处理电商数据的方式：让数据直接服务决策。</p></div><a class="tev" href="assets/growth-aitable.png" data-zoom><img src="assets/growth-aitable.png" alt="茶之都门店销售数据智能分析台" loading="lazy"></a></div>
+      <div class="t-item" data-reveal><div class="t-body"><div class="yr">2026 夏</div><h4>系统补齐 AI 工具链，两个小程序从 0 到 1</h4><p>用 AI 辅助开发云丝侗韵小程序与科斌饮品点单助手，两个小程序从 0 到 1 开发完成。</p></div><a class="tev" href="assets/growth-miniapps.jpg" data-zoom><img src="assets/growth-miniapps.jpg" alt="云丝侗韵与科斌点单两个小程序的运行界面" loading="lazy"></a></div>
+      <div class="t-item" data-reveal><div class="t-body"><div class="yr">2026.09</div><h4>开源平台学习并实操版本管理及 AI 项目探索</h4><p>一周上手 GitHub，独立完成账号注册、SSH 密钥配置、仓库推送与README 编写，借助开源社区研读 AI 项目，拓展前沿技术认知。</p></div><a class="tev" href="assets/growth-github.jpg" data-zoom><img src="assets/growth-github.jpg" alt="GitHub 开源社区浏览与学习现场" loading="lazy"></a></div>
+      <div class="t-item" data-reveal><div class="t-body"><div class="yr">2026.09</div><h4>为销量台账接入 AI：Excel 从记录工具变成决策助手</h4><p>给门店销量台账接入 AI 大模型：可对话提问、框选即分析、按历史销量给出下月备货预估，把原本逐行翻表的复盘压缩到秒级。这正是我处理电商数据的方式：让数据直接服务决策。</p></div><a class="tev" href="assets/growth-aitable.png" data-zoom><img src="assets/growth-aitable.png" alt="茶之都门店销售数据AI智能分析台" loading="lazy"></a></div>
       <div class="t-item" data-reveal><div class="t-body"><div class="yr">2026.09</div><h4>切入跨境电商主线：3C 出海品牌拆解 + ROAS 投放模型</h4><p>独立拆解 Anker / Baseus / UGREEN 三个 3C 出海标杆独立站，输出「选品—定价—投放—转化」四步方案；自建 7 参数单位经济模型，可实时测算 ROAS、日净利与盈亏平衡点。</p></div><a class="tev" href="assets/growth-3c-roas.jpg" data-zoom><img src="assets/growth-3c-roas.jpg" alt="3C 出海品牌独立站拆解报告与跨境电商投放测算模型" loading="lazy"></a></div>
-      <div class="t-item" data-reveal><div class="t-body"><div class="yr">2026.10</div><h4>已完成 ✅ 独立站从 0 到 1（SHOPLINE）：HKB Tech 3C 配件站上线</h4><p>5 个 SKU 英文 Listing（定价/成本/SEO）+ 配送区域与货到付款配置，真实走通下单—收款—发货订单闭环（订单 #1001 / $52.98 / 15 张全流程截图取证）；并用自建 ROAS 模型反推投放门槛：单件客单 $34.99 → 盈亏平衡 ROAS 2.09、所需转化率 7.18%（冷启动不可行），捆绑组合 $52.98 → 门槛 4.44%，由此确定「捆绑销售提升客单价」的投放策略。</p></div><a class="tev" href="assets/growth-store.png" data-zoom><img src="assets/growth-store.png" alt="HKB Tech 独立站前台商品列表页" loading="lazy"></a></div>
-      <div class="t-item" data-reveal><div class="t-body"><div class="yr">2026.10</div><h4>搭建个人知识管理系统：Obsidian 多中心知识图谱（60 篇）</h4><p>用双链笔记把外贸全链路、平台运营、投放数据、岗位名词、学习方法拆成 7 个主题中枢 + 2 个岗位名词速查中心 + 4 个读书中心，自定「必答三问 + 一周输出物」的掌握度判据，全部笔记零断链、零孤岛。信息结构化正是运营岗的基本功：把碎片知识整理成能随时调用的决策资产。</p></div><a class="tev" href="assets/growth-kb.jpg" data-zoom><img src="assets/growth-kb.jpg" alt="Obsidian 多中心知识图谱：60 篇笔记多中枢关系网络" loading="lazy"></a></div>
+      <div class="t-item" data-reveal><div class="t-body"><div class="yr">2026.10</div><h4>完成 独立站（SHOPLINE）：HKB Tech 3C 配件站上线</h4><p>5 个 SKU 英文 Listing（定价/成本/SEO）+ 配送区域与货到付款配置，真实走通下单—收款—发货订单闭环（订单 #1001 / $52.98 / 15 张全流程截图取证）；并用自建 ROAS 模型反推投放门槛：单件客单 $34.99 → 盈亏平衡 ROAS 2.09、所需转化率 7.18%（冷启动不可行），捆绑组合 $52.98 → 门槛 4.44%，由此确定「捆绑销售提升客单价」的投放策略。</p></div><a class="tev" href="assets/growth-store.png" data-zoom><img src="assets/growth-store.png" alt="HKB Tech 独立站前台商品列表页" loading="lazy"></a></div>
+      <div class="t-item" data-reveal><div class="t-body"><div class="yr">2026.10</div><h4>搭建个人知识管理系统：Obsidian 多中心知识图谱（60 篇）</h4><p>用双链笔记把外贸全链路、平台运营、投放数据、岗位名词、学习方法拆成 7 个主题中枢 + 2 个岗位名词速查中心 + 4 个读书中心，自定「必答三问 + 一周输出物」的掌握度判据，全部笔记零断链、零孤岛，把碎片知识整理成能随时调用的决策资产。</p></div><a class="tev" href="assets/growth-kb.jpg" data-zoom><img src="assets/growth-kb.jpg" alt="Obsidian 多中心知识图谱：60 篇笔记多中枢关系网络" loading="lazy"></a></div>
     </div>
   </div>
 </section>
@@ -525,11 +530,11 @@
 
 <div class="aimodal" id="aiModal" aria-hidden="true">
   <div class="aimodal-bar">
-    <span class="aimodal-title">门店销售数据智能分析台 · 可试用</span>
+    <span class="aimodal-title">门店销售数据AI智能分析台 · 可试用</span>
     <a class="aimodal-ext" href="ai-table/index.html" target="_blank" rel="noopener">新窗口打开 ↗</a>
     <button class="aimodal-x" id="aiModalX" type="button" aria-label="关闭">✕</button>
   </div>
-  <iframe class="aimodal-frame" id="aiModalFrame" title="门店销售数据智能分析台" data-src="ai-table/index.html"></iframe>
+  <iframe class="aimodal-frame" id="aiModalFrame" title="门店销售数据AI智能分析台" data-src="ai-table/index.html"></iframe>
   <div class="aimodal-hint">按 ESC 或点击 ✕ 关闭 · 内置 36 款饮品 4 个周期真实销售数据，可直接框选数据提问（AI 分析需联网，首次加载约 2–5 秒）</div>
 </div>
 
@@ -1012,7 +1017,7 @@
     }
   })();
 
-  /* ---------- 10. 智能分析台：全屏试用弹层（首次点击才加载，不拖慢首页） ---------- */
+  /* ---------- 10. AI智能分析台：全屏试用弹层（首次点击才加载，不拖慢首页） ---------- */
   (function aiTrial(){
     var btn = doc.getElementById('aiTryBtn'), m = doc.getElementById('aiModal');
     if(!btn || !m) return;
