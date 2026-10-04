@@ -382,7 +382,7 @@
         </div>
         <div class="body">
           <h3>360° VR 全景 · 侗绣虚拟展厅</h3>
-          <p>基于全景平台制作的侗绣展厅虚拟展示，绣品、银饰与织锦场景可拖拽环视，在线即可走进侗绣空间（全景背景音乐可在播放器内关闭）。</p>
+          <p>基于全景平台制作的侗绣展厅虚拟展示，绣品、银饰与织锦场景可拖拽环视，在线即可走进侗绣空间（进入后自动播放展厅背景音乐，可在播放器内关闭）。</p>
           <div class="qr-row">
             <div><a class="linkline" href="https://vr.om.cn/view/973494" target="_blank" rel="noopener">在线体验 →</a></div>
             <div><img class="qr" src="assets/qr-vr.png" alt="VR 全景二维码"><div class="cap">扫码进入全景展厅</div></div>
@@ -996,7 +996,7 @@
     m.addEventListener('click', function(){
       if(m.querySelector('iframe')) return;
       m.style.cursor = 'default';
-      m.innerHTML = '<iframe class="vr-frame" src="https://vr.om.cn/view/973494" title="360 度 VR 全景 · 侗绣虚拟展厅" allow="fullscreen; xr-spatial-tracking" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>';
+      m.innerHTML = '<iframe class="vr-frame" src="https://vr.om.cn/view/973494" title="360 度 VR 全景 · 侗绣虚拟展厅" allow="autoplay; fullscreen; xr-spatial-tracking" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>';
     });
   })();
 
