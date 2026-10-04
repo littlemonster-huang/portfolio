@@ -16,10 +16,18 @@ h1{font-size:23px;font-weight:800}
 .notice{background:var(--amber-bg);border:1px solid #FDE68A;border-radius:10px;padding:10px 14px;font-size:12.5px;color:#92400E;margin:16px auto 24px;max-width:900px}
 .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
 @media(max-width:760px){.grid{grid-template-columns:1fr}}
-figure{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+figure{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.05);cursor:zoom-in;transition:box-shadow .2s,transform .2s}
+figure:hover{box-shadow:0 4px 14px rgba(0,0,0,.12);transform:translateY(-2px)}
 figure img{width:100%;display:block}
 figcaption{padding:9px 13px;font-size:12.5px;color:var(--text);border-top:1px solid var(--line)}
 figcaption b{color:var(--amber)}
+.hint{font-size:11px;color:var(--muted);text-align:center;margin:0 0 14px}
+/* 点击放大层 */
+#lightbox{display:none;position:fixed;inset:0;z-index:999;background:rgba(17,24,39,.88);cursor:zoom-out;align-items:center;justify-content:center;padding:28px}
+#lightbox.on{display:flex}
+#lightbox img{max-width:96vw;max-height:92vh;border-radius:8px;box-shadow:0 8px 40px rgba(0,0,0,.5)}
+#lightbox .cap{position:fixed;left:0;right:0;bottom:14px;text-align:center;color:#F9FAFB;font-size:13px;text-shadow:0 1px 3px rgba(0,0,0,.6);padding:0 20px}
+#lightbox .x{position:fixed;top:14px;right:20px;color:#F9FAFB;font-size:30px;line-height:1;cursor:pointer;user-select:none}
 footer{text-align:center;font-size:12px;color:var(--muted);margin-top:26px}
 </style>
 </head>
@@ -30,21 +38,45 @@ footer{text-align:center;font-size:12px;color:var(--muted);margin-top:26px}
 <div class="sub">SHOPLINE（hkbtech.myshopline.com）｜5 个 SKU 英文 Listing｜测试订单 <b>#1001 · US$52.98</b> · 已付款 · 已发货</div>
 </header>
 <div class="notice">诚实声明：本店为求职演示用途的<b>测试店铺</b>——商品图片为 AI 生成的占位图，收货地址为虚构测试地址。建站、Listing、支付与履约配置、订单闭环操作均为本人亲手完成，截图未做任何修改。</div>
+<div class="hint">🖱️ 点击任意截图可放大查看原图</div>
 <div class="grid">
-<figure><img src="assets/store/01-后台商品列表.png" alt="后台商品列表"><figcaption><b>① 后台商品列表</b>：5 个 SKU 全部上架，库存与定价体系完整</figcaption></figure>
-<figure><img src="assets/store/05-商品列表.png" alt="前台商品列表"><figcaption><b>② 前台商品列表</b>：英文 Listing + 划线价（Compare-at price）展示</figcaption></figure>
-<figure><img src="assets/store/06-购物车.png" alt="购物车"><figcaption><b>③ 购物车</b>：充电器 + 数据线组合，客单价 US$52.98</figcaption></figure>
-<figure><img src="assets/store/07-结账-地址.png" alt="结账地址"><figcaption><b>④ 结账 · 收货地址</b>：美国市场、州/邮编校验通过</figcaption></figure>
-<figure><img src="assets/store/09-结账-付款.png" alt="付款方式"><figcaption><b>⑤ 结账 · 支付方式</b>：货到付款（COD）链路可用，无需真实刷卡</figcaption></figure>
-<figure><img src="assets/store/10-下单成功.png" alt="下单成功"><figcaption><b>⑥ 下单成功</b>：订单 #1001 生成，确认页含完整订单信息</figcaption></figure>
-<figure><img src="assets/store/12-订单详情.png" alt="后台订单详情"><figcaption><b>⑦ 后台 · 订单详情</b>：商品 / 金额 / 收货地址 / COD 付款方式齐全</figcaption></figure>
-<figure><img src="assets/store/13-标记已付款.png" alt="标记已付款"><figcaption><b>⑧ 标记已付款</b>：收款状态闭环</figcaption></figure>
-<figure><img src="assets/store/14-标记已发货.png" alt="标记已发货"><figcaption><b>⑨ 标记已发货</b>：履约闭环完成（下单 → 收款 → 发货）</figcaption></figure>
-<figure><img src="assets/store/02-运费配置.png" alt="运费配置"><figcaption><b>⑩ 配送配置</b>：美国配送区域 + Free Standard Shipping 方案</figcaption></figure>
-<figure><img src="assets/store/03-支付方式配置.png" alt="收款配置"><figcaption><b>⑪ 收款配置</b>：手动收款方式（货到付款）已添加</figcaption></figure>
-<figure><img src="assets/store/16-数据看板.png" alt="数据看板"><figcaption><b>⑫ 后台数据看板</b>：首日订单 1 / 销售额 US$52.98 / 转化率 100%（测试流量）</figcaption></figure>
+<figure><img src="assets/store/01-后台商品列表.png" alt="后台商品列表" data-cap="① 后台商品列表：5 个 SKU 全部上架，库存与定价体系完整"><figcaption><b>① 后台商品列表</b>：5 个 SKU 全部上架，库存与定价体系完整</figcaption></figure>
+<figure><img src="assets/store/05-商品列表.png" alt="前台商品列表" data-cap="② 前台商品列表：英文 Listing + 划线价（Compare-at price）展示"><figcaption><b>② 前台商品列表</b>：英文 Listing + 划线价（Compare-at price）展示</figcaption></figure>
+<figure><img src="assets/store/04-前台首页.png" alt="前台首页" data-cap="③ 前台首页：横幅已替换为产品组合图，模板占位符清除"><figcaption><b>③ 前台首页</b>：横幅已替换为产品组合图，模板占位符清除</figcaption></figure>
+<figure><img src="assets/store/17-商品详情.png" alt="单品详情页" data-cap="④ 单品详情页：主图 / 划线价 / 信任徽章与卖点齐全"><figcaption><b>④ 单品详情页</b>：主图 / 划线价 / 信任徽章与卖点齐全</figcaption></figure>
+<figure><img src="assets/store/06-购物车.png" alt="购物车" data-cap="⑤ 购物车：充电器 + 数据线组合，客单价 US$52.98"><figcaption><b>⑤ 购物车</b>：充电器 + 数据线组合，客单价 US$52.98</figcaption></figure>
+<figure><img src="assets/store/07-结账-地址.png" alt="结账地址" data-cap="⑥ 结账 · 收货地址：美国市场、州/邮编校验通过"><figcaption><b>⑥ 结账 · 收货地址</b>：美国市场、州/邮编校验通过</figcaption></figure>
+<figure><img src="assets/store/09-结账-付款.png" alt="付款方式" data-cap="⑦ 结账 · 支付方式：货到付款（COD）链路可用，无需真实刷卡"><figcaption><b>⑦ 结账 · 支付方式</b>：货到付款（COD）链路可用，无需真实刷卡</figcaption></figure>
+<figure><img src="assets/store/10-下单成功.png" alt="下单成功" data-cap="⑧ 下单成功：订单 #1001 生成，确认页含完整订单信息"><figcaption><b>⑧ 下单成功</b>：订单 #1001 生成，确认页含完整订单信息</figcaption></figure>
+<figure><img src="assets/store/12-订单详情.png" alt="后台订单详情" data-cap="⑨ 后台 · 订单详情：商品 / 金额 / 收货地址 / COD 付款方式齐全"><figcaption><b>⑨ 后台 · 订单详情</b>：商品 / 金额 / 收货地址 / COD 付款方式齐全</figcaption></figure>
+<figure><img src="assets/store/13-标记已付款.png" alt="标记已付款" data-cap="⑩ 标记已付款：收款状态闭环"><figcaption><b>⑩ 标记已付款</b>：收款状态闭环</figcaption></figure>
+<figure><img src="assets/store/14-标记已发货.png" alt="标记已发货" data-cap="⑪ 标记已发货：履约闭环完成（下单 → 收款 → 发货）"><figcaption><b>⑪ 标记已发货</b>：履约闭环完成（下单 → 收款 → 发货）</figcaption></figure>
+<figure><img src="assets/store/02-运费配置.png" alt="运费配置" data-cap="⑫ 配送配置：美国配送区域 + Free Standard Shipping 方案"><figcaption><b>⑫ 配送配置</b>：美国配送区域 + Free Standard Shipping 方案</figcaption></figure>
+<figure><img src="assets/store/03-支付方式配置.png" alt="收款配置" data-cap="⑬ 收款配置：手动收款方式（货到付款）已添加"><figcaption><b>⑬ 收款配置</b>：手动收款方式（货到付款）已添加</figcaption></figure>
+<figure><img src="assets/store/16-数据看板.png" alt="数据看板" data-cap="⑭ 后台数据看板：首日订单 1 / 销售额 US$52.98 / 转化率 100%（测试流量）"><figcaption><b>⑭ 后台数据看板</b>：首日订单 1 / 销售额 US$52.98 / 转化率 100%（测试流量）</figcaption></figure>
+<figure><img src="assets/store/18-成本与利润率.png" alt="成本与利润率" data-cap="⑮ 成本结构：售价 39.99 / 原价 49.99 / 成本 14 → 利润 25.99、毛利率 65%（定价与成本体系为自己设定）"><figcaption><b>⑮ 成本结构</b>：售价 39.99 / 原价 49.99 / 成本 14 → 利润 25.99、毛利率 65%（定价与成本体系为自己设定）</figcaption></figure>
 </div>
 <footer>黄科斌 · 跨境电商运营作品集 · <a href="index.html">返回主页</a></footer>
 </div>
+<div id="lightbox"><span class="x">&times;</span><img src="" alt=""><div class="cap"></div></div>
+<script>
+(function(){
+  var lb=document.getElementById('lightbox'),
+      lbImg=lb.querySelector('img'),
+      lbCap=lb.querySelector('.cap');
+  document.querySelectorAll('.grid figure').forEach(function(f){
+    f.addEventListener('click',function(){
+      var img=f.querySelector('img');
+      lbImg.src=img.src;
+      lbCap.textContent=img.getAttribute('data-cap')||'';
+      lb.classList.add('on');
+      document.body.style.overflow='hidden';
+    });
+  });
+  function close(){lb.classList.remove('on');document.body.style.overflow='';}
+  lb.addEventListener('click',close);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});
+})();
+</script>
 </body>
 </html>
