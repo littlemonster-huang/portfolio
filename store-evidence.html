@@ -14,7 +14,8 @@ h1{font-size:23px;font-weight:800}
 .sub{font-size:13px;color:var(--muted);margin-top:6px}
 .sub b{color:var(--amber)}
 .notice{background:var(--amber-bg);border:1px solid #FDE68A;border-radius:10px;padding:10px 14px;font-size:12.5px;color:#92400E;margin:16px auto 24px;max-width:900px}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media(max-width:960px){.grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:760px){.grid{grid-template-columns:1fr}}
 figure{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.05);cursor:zoom-in;transition:box-shadow .2s,transform .2s}
 figure:hover{box-shadow:0 4px 14px rgba(0,0,0,.12);transform:translateY(-2px)}
@@ -41,6 +42,16 @@ figcaption b{color:var(--amber)}
 #lb .tools button:hover{background:rgba(255,255,255,.28)}
 #lb .tip{position:absolute;left:0;right:0;top:60px;text-align:center;color:rgba(249,250,251,.62);font-size:11.5px}
 @media(max-width:760px){#lb .nav{width:42px;height:42px;line-height:40px;font-size:24px}#lb .prev{left:8px}#lb .next{right:8px}#lb .tip{display:none}}
+.econ{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin-top:24px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.econ h2{font-size:17px;font-weight:800;color:var(--amber)}
+.econ-sub{font-size:12.5px;color:var(--muted);margin:8px 0 14px}
+.econ table{width:100%;border-collapse:collapse;font-size:12.5px}
+.econ th,.econ td{border:1px solid var(--line);padding:7px 9px;text-align:center}
+.econ th{background:#FEF3C7;color:#92400E}
+.econ td b{color:var(--amber)}
+.econ .calc{font-size:12.5px;margin-top:12px}
+.econ .fine{font-size:11px;color:var(--muted);margin-top:6px}
+.insight{background:var(--amber-bg);border:1px solid #FDE68A;border-radius:10px;padding:12px 14px;font-size:13px;color:#92400E;margin-top:14px}
 footer{text-align:center;font-size:12px;color:var(--muted);margin-top:26px}
 </style>
 </head>
@@ -69,6 +80,24 @@ footer{text-align:center;font-size:12px;color:var(--muted);margin-top:26px}
 <figure><img src="assets/store/16-数据看板.png" alt="数据看板" data-cap="后台数据看板：首日订单 1 / 销售额 US$52.98 / 转化率 100%（测试流量）"><figcaption><b>⑭ 后台数据看板</b>：首日订单 1 / 销售额 US$52.98 / 转化率 100%（测试流量）</figcaption></figure>
 <figure><img src="assets/store/18-成本与利润率.png" alt="成本与利润率" data-cap="成本结构：售价 39.99 / 原价 49.99 / 成本 14 → 利润 25.99、毛利率 65%（定价与成本体系为自己设定）"><figcaption><b>⑮ 成本结构</b>：售价 39.99 / 原价 49.99 / 成本 14 → 利润 25.99、毛利率 65%（定价与成本体系为自己设定）</figcaption></figure>
 </div>
+
+<section class="econ">
+  <h2>建站测试数据 → ROAS 反推过程与总结收获</h2>
+  <p class="econ-sub">本店未开真实投放，CPC / CVR / ROAS 无实测值——以下为把店铺真实定价喂入自建 7 参数单位经济模型反推出的<b>盈亏平衡门槛</b>。参数：采购成本率 34.9%、支付通道 2.9%+$0.3/单、头程 $3/单、退货率 5%、CPC $1.2（行业参考输入）。</p>
+  <table>
+    <tr><th>场景</th><th>售价 AOV</th><th>采购成本</th><th>头程</th><th>通道费</th><th>退货损失</th><th>贡献利润</th><th>贡献率</th><th>盈亏平衡 ROAS</th><th>所需 CVR</th></tr>
+    <tr><td>单件</td><td>$34.99</td><td>$12.21</td><td>$3</td><td>$1.31</td><td>$1.75</td><td><b>$16.71</b></td><td>47.8%</td><td><b>2.09</b></td><td>7.18%</td></tr>
+    <tr><td>两件（订单 #1001）</td><td>$52.98</td><td>$18.49</td><td>$3</td><td>$1.84</td><td>$2.65</td><td><b>$27.00</b></td><td>51.0%</td><td><b>1.96</b></td><td>4.44%</td></tr>
+    <tr><td>三件</td><td>$91.97</td><td>$32.10</td><td>$3</td><td>$2.97</td><td>$4.60</td><td><b>$49.31</b></td><td>53.6%</td><td><b>1.87</b></td><td>2.43%</td></tr>
+  </table>
+  <p class="calc"><b>计算过程（以两件装 $52.98 = 订单 #1001 为例）：</b>采购成本 = $52.98 × 34.9% = $18.49；支付通道费 = $52.98 × 2.9% + $0.3 = $1.8364；退货损失 = $52.98 × 5% = $2.649；头程物流 = $3（固定）。<br>
+  连减验算：售价 − 采购成本 − 头程物流 − 支付通道费 − 退货损失 = $52.98 − 18.49 − 3 − 1.8364 − 2.649 = 27.0046 ≈ 贡献利润 <b>$27.00</b>；贡献率 = 贡献利润 ÷ 售价 = 27.0046 ÷ 52.98 = 51.0%；盈亏平衡 ROAS = 售价 ÷ 贡献利润 = 52.98 ÷ 27.0046 = <b>1.96</b>；所需 CVR = CPC ÷ 贡献利润 = 1.2 ÷ 27.0046 = <b>4.44%</b>。</p>
+  <p class="calc"><b>单件</b>：$34.99 − 12.2115 − 3 − 1.3147 − 1.7495 = 16.7143 ≈ $16.71 → 平衡 ROAS = 34.99 ÷ 16.7143 = 2.09、所需 CVR = 1.2 ÷ 16.7143 = 7.18%；<b>三件</b>：$91.97 − 32.0975 − 3 − 2.9671 − 4.5985 = 49.3068 ≈ $49.31 → 平衡 ROAS = 1.87、所需 CVR = 2.43%。</p>
+  <p class="fine">注：表中金额为四舍五入展示，计算全程使用未舍入中间值。</p>
+  <div class="insight">
+    <b>总结收获：</b>①<b>捆绑提客单是最有效的降门槛杠杆</b>——客单价从 $34.99 提到 $91.97，$0.3 固定通道费与 $3 头程被摊薄，贡献率从 47.8% 升到 53.6%，所需 CVR 从 7.18% 降到 2.43%（门槛降为约 1/3），这正是店铺设置两件/三件组合价的原因；②订单 #1001（两件装 $52.98）验证了从选品定价、Listing、支付到履约的完整闭环——<b>先算清单单位经济，再谈流量</b>：投放每花 $1 都直接从贡献利润里扣；③测试订单证明经营动作真实可复现，为后续真实投放提供了经过验证的模型底座。
+  </div>
+</section>
 <footer>黄科斌 · 跨境电商运营作品集 · <a href="index.html">返回主页</a></footer>
 </div>
 
