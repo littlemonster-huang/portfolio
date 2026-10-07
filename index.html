@@ -268,24 +268,36 @@
     *{animation-duration:.01ms!important;transition-duration:.01ms!important}
   }
 
-  /* ---------- 开屏背景 · 人物动画全屏（2026.10.07） ---------- */
-  .hero-open{min-height:100vh;position:relative;overflow:hidden;padding-top:118px;padding-bottom:0;background:#0b0b0d}
-  .hero-stage{position:absolute;inset:0;z-index:0;overflow:hidden;background:#0b0b0d;-webkit-mask-image:none;mask-image:none}
-  .hero-stage video.hero-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 40%;
-    transform:scale(1.04);filter:saturate(1.06) contrast(1.05);
-    animation:kbPush 30s cubic-bezier(.44,0,.56,1) infinite alternate}
-  @keyframes kbPush{from{transform:scale(1.04) translate3d(0,0,0)}to{transform:scale(1.13) translate3d(-1.2%,-1.4%,0)}}
+    /* ---------- HERO 最终版：左文字区 + 右侧人物动画（2026.10.07 重写，替代 v1~v6 补丁） ---------- */
+  .hero-open{min-height:100vh;position:relative;overflow:hidden;padding:118px 0 0;background:#0b0b0d}
+  .hero-stage{position:absolute;inset:0;z-index:0;overflow:hidden;background:#0b0b0d;
+    display:flex;align-items:center;justify-content:flex-end;
+    padding:0 clamp(56px,11vw,200px) 0 0;isolation:isolate;-webkit-mask-image:none;mask-image:none}
+  .hero-stage video.hero-video{position:static;width:auto;height:auto;
+    max-width:min(34vw,420px);max-height:min(72vh,660px);
+    object-fit:contain;object-position:center;
+    mix-blend-mode:screen;filter:saturate(1.12) contrast(1.04) brightness(1.14);
+    -webkit-backface-visibility:hidden;backface-visibility:hidden;will-change:transform,opacity;
+    animation:heroWalk 16s cubic-bezier(.44,0,.56,1) infinite}
+  @keyframes heroWalk{
+    0%{transform:translateX(12vw) scale(1.03);opacity:0}
+    10%{opacity:1}
+    42%{transform:translateX(0) scale(1);opacity:1}
+    86%{transform:translateX(0) scale(1);opacity:1}
+    100%{transform:translateX(12vw) scale(1.03);opacity:0}}
   .hero-veil{position:absolute;inset:0;pointer-events:none;
-    background:linear-gradient(94deg,rgba(11,11,13,.95) 0%,rgba(11,11,13,.90) 26%,rgba(11,11,13,.62) 48%,rgba(11,11,13,.22) 72%,rgba(11,11,13,.40) 100%),
-      radial-gradient(122% 88% at 78% 14%,rgba(0,0,0,0) 0%,rgba(0,0,0,.40) 76%,rgba(0,0,0,.74) 100%),
-      linear-gradient(to top,rgba(11,11,13,.94) 0%,rgba(11,11,13,0) 40%)}
-  .hero-grain{position:absolute;inset:0;pointer-events:none;opacity:.55;
+    background:linear-gradient(to top,rgba(11,11,13,.90) 0%,rgba(11,11,13,.16) 22%,rgba(11,11,13,0) 48%,rgba(11,11,13,.26) 100%),
+      radial-gradient(118% 92% at 74% 44%,rgba(0,0,0,0) 0%,rgba(0,0,0,.10) 76%,rgba(0,0,0,.40) 100%),
+      linear-gradient(90deg,rgba(11,11,13,.90) 0%,rgba(11,11,13,.50) 30%,rgba(11,11,13,.06) 46%,rgba(11,11,13,0) 62%)}
+  .hero-grain{position:absolute;inset:0;pointer-events:none;opacity:.26;
     background-image:radial-gradient(rgba(255,255,255,.05) 1px,transparent 1px);background-size:3px 3px}
   .hero-ambient{position:absolute;inset:0;pointer-events:none;z-index:1;opacity:0;transition:opacity .7s ease;
     background:radial-gradient(540px circle at var(--mx,62%) var(--my,36%),rgba(194,69,88,.17),rgba(194,69,88,.05) 44%,transparent 70%)}
   .hero-ambient.on{opacity:1}
   .hero-inner{position:relative;z-index:2;flex:1;display:flex;align-items:center}
-  .hero-open .hero-grid{grid-template-columns:1fr;max-width:780px}
+  .hero-open .hero-grid{grid-template-columns:1fr;max-width:min(42vw,520px)}
+  .hero-open .wrap{max-width:none;margin-left:0;margin-right:auto;
+    padding-left:clamp(28px,7vw,120px);padding-right:24px}
   .hero-open .hero h1{font-size:clamp(56px,10.5vw,132px)}
   .hero-open .hero .sub{max-width:640px}
   .hero-cue{position:absolute;left:50%;bottom:108px;transform:translateX(-50%);z-index:3;
@@ -295,107 +307,19 @@
   @keyframes cueDrop{0%{transform:scaleY(.15);transform-origin:top;opacity:0}38%{opacity:1}100%{transform:scaleY(1);transform-origin:top;opacity:0}}
   @media(max-width:720px){
     .hero-open{min-height:100svh;padding-top:98px}
+    .hero-stage{justify-content:center;padding:0 0 104px}
+    .hero-stage video.hero-video{animation:none;opacity:1;transform:none;max-width:78vw;max-height:50vh}
     .hero-open .hero-grid{max-width:none}
+    .hero-open .wrap{max-width:1200px;padding-left:24px;padding-right:24px}
     .hero-open .hero h1{font-size:clamp(46px,15vw,84px)}
     .hero-veil{background:linear-gradient(180deg,rgba(11,11,13,.84) 0%,rgba(11,11,13,.70) 40%,rgba(11,11,13,.93) 100%)}
     .hero-cue{bottom:100px}
   }
   @media (prefers-reduced-motion:reduce){
-    .hero-stage video.hero-video{animation:none}
+    .hero-stage video.hero-video{animation:none;opacity:1;transform:none}
     .hero-cue i{animation:none}
   }
-
-  /* ---------- 开屏背景 v2：人物按原比例置于背景右侧，不再铺满（2026.10.07 调整） ---------- */
-  .hero-stage{display:flex;align-items:center;justify-content:flex-end;
-    padding:0 clamp(14px,3.5vw,64px) 0 0}
-  .hero-stage video.hero-video{width:auto;height:auto;max-width:min(44vw,540px);max-height:min(84vh,760px);
-    object-fit:contain;object-position:center;filter:saturate(1.05) contrast(1.03) brightness(.94);
-    animation:kbFloat 20s cubic-bezier(.44,0,.56,1) infinite alternate}
-  @keyframes kbFloat{from{transform:scale(1)}to{transform:scale(1.06)}}
-  .hero-veil{background:
-    linear-gradient(to top,rgba(11,11,13,.95) 0%,rgba(11,11,13,.26) 30%,rgba(11,11,13,.06) 62%,rgba(11,11,13,.45) 100%),
-    radial-gradient(115% 92% at 70% 46%,rgba(0,0,0,0) 0%,rgba(0,0,0,.26) 72%,rgba(0,0,0,.60) 100%),
-    linear-gradient(90deg,rgba(11,11,13,.90) 0%,rgba(11,11,13,.50) 40%,rgba(11,11,13,.04) 66%,rgba(11,11,13,.34) 100%)}
-  @media(max-width:720px){
-    .hero-stage{justify-content:center;padding:0 0 104px}
-    .hero-stage video.hero-video{max-width:84vw;max-height:54vh}
-  }
-
-  /* ---------- 开屏背景 v3：人物尺寸收敛到接近原版视觉重量 + 修复 poster（2026.10.07） ---------- */
-  .hero-stage video.hero-video{max-width:min(40vw,480px);max-height:min(78vh,700px)}
-
-  /* ---------- 开屏背景 v4：清晰度↑ + 人物从右侧走入 + 文字块左移至中线内（2026.10.07） ---------- */
-  .hero-stage{justify-content:flex-end;padding:0 clamp(14px,3vw,54px) 0 0;backface-visibility:hidden}
-  .hero-stage video.hero-video{
-    max-width:min(40vw,480px);max-height:min(78vh,700px);
-    filter:saturate(1.12) contrast(1.08) brightness(1.04);
-    -webkit-backface-visibility:hidden;
-    will-change:transform,opacity;
-    animation:walkCycle 16s cubic-bezier(.44,0,.56,1) infinite}
-  @keyframes walkCycle{
-    0%{transform:translateX(46vw) scale(1.05);opacity:0}
-    10%{opacity:1}
-    42%{transform:translateX(0) scale(1);opacity:1}
-    88%{transform:translateX(0) scale(1);opacity:1}
-    100%{transform:translateX(46vw) scale(1.05);opacity:0}}
-  .hero-veil{background:
-    linear-gradient(to top,rgba(11,11,13,.94) 0%,rgba(11,11,13,.22) 28%,rgba(11,11,13,0) 58%,rgba(11,11,13,.30) 100%),
-    radial-gradient(120% 95% at 72% 46%,rgba(0,0,0,0) 0%,rgba(0,0,0,.14) 74%,rgba(0,0,0,.46) 100%),
-    linear-gradient(90deg,rgba(11,11,13,.92) 0%,rgba(11,11,13,.58) 34%,rgba(11,11,13,.10) 52%,rgba(11,11,13,0) 70%)}
-  .hero-grain{opacity:.26}
-  .hero-open .hero-grid{max-width:min(52vw,600px)}
-  .hero-open .wrap{padding-left:clamp(24px,4vw,56px);padding-right:24px}
-  @media(max-width:720px){
-    .hero-stage{justify-content:center;padding:0 0 104px}
-    .hero-stage video.hero-video{max-width:78vw;max-height:50vh;animation:none;opacity:1;transform:none}
-    .hero-open .hero-grid{max-width:none}
-    .hero-open .wrap{padding-left:24px;padding-right:24px}
-  }
-  @media (prefers-reduced-motion:reduce){
-    .hero-stage video.hero-video{animation:none;opacity:1;transform:none}
-  }
-
-  /* ---------- 开屏背景 v5：去除视频黑底（screen 混合）+ 人物循环走到接近中线（2026.10.07） ---------- */
-  .hero-stage{isolation:isolate;justify-content:flex-end;padding:0 clamp(56px,26vw,420px) 0 0}
-  .hero-stage video.hero-video{
-    mix-blend-mode:screen;
-    filter:saturate(1.10) contrast(1.06) brightness(.98);
-    animation:walkInLoop 16s cubic-bezier(.44,0,.56,1) infinite}
-  @keyframes walkInLoop{
-    0%{transform:translateX(64vw) scale(1.04);opacity:0}
-    8%{opacity:1}
-    40%{transform:translateX(0) scale(1);opacity:1}
-    86%{transform:translateX(0) scale(1);opacity:1}
-    100%{transform:translateX(64vw) scale(1.04);opacity:0}}
-  @media(max-width:720px){
-    .hero-stage{justify-content:center;padding:0 0 104px}
-    .hero-stage video.hero-video{max-width:78vw;max-height:50vh;animation:none;opacity:1;transform:none}
-  }
-
-  /* ---------- 开屏背景 v6：文字进左侧蓝区、人物活动范围锁右侧红区、调亮（2026.10.07） ---------- */
-  .hero-open .wrap{max-width:none;padding-left:clamp(28px,7vw,120px);padding-right:24px}
-  .hero-open .hero-grid{max-width:min(44vw,560px)}
-  .hero-stage{padding:0 clamp(56px,11vw,200px) 0 0}
-  .hero-stage video.hero-video{
-    max-width:min(34vw,420px);max-height:min(72vh,660px);
-    filter:saturate(1.12) contrast(1.04) brightness(1.14);
-    animation:walkLoop2 16s cubic-bezier(.44,0,.56,1) infinite}
-  @keyframes walkLoop2{
-    0%{transform:translateX(12vw) scale(1.03);opacity:0}
-    10%{opacity:1}
-    42%{transform:translateX(0) scale(1);opacity:1}
-    86%{transform:translateX(0) scale(1);opacity:1}
-    100%{transform:translateX(12vw) scale(1.03);opacity:0}}
-  .hero-veil{background:
-    linear-gradient(to top,rgba(11,11,13,.90) 0%,rgba(11,11,13,.16) 22%,rgba(11,11,13,0) 48%,rgba(11,11,13,.26) 100%),
-    radial-gradient(118% 92% at 74% 44%,rgba(0,0,0,0) 0%,rgba(0,0,0,.10) 76%,rgba(0,0,0,.40) 100%),
-    linear-gradient(90deg,rgba(11,11,13,.90) 0%,rgba(11,11,13,.50) 30%,rgba(11,11,13,.06) 46%,rgba(11,11,13,0) 62%)}
-  @media(max-width:720px){
-    .hero-open .wrap{max-width:1200px;padding-left:24px;padding-right:24px}
-    .hero-open .hero-grid{max-width:none}
-  }
-</style>
-<noscript><style>[data-ap],[data-reveal]{opacity:1!important;transform:none!important;translate:0 0!important}.mask>span{transform:none!important}</style></noscript>
+</style></noscript>
 </head>
 <body>
 <div id="topline"></div>
