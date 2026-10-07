@@ -323,6 +323,37 @@
 
   /* ---------- 开屏背景 v3：人物尺寸收敛到接近原版视觉重量 + 修复 poster（2026.10.07） ---------- */
   .hero-stage video.hero-video{max-width:min(40vw,480px);max-height:min(78vh,700px)}
+
+  /* ---------- 开屏背景 v4：清晰度↑ + 人物从右侧走入 + 文字块左移至中线内（2026.10.07） ---------- */
+  .hero-stage{justify-content:flex-end;padding:0 clamp(14px,3vw,54px) 0 0;backface-visibility:hidden}
+  .hero-stage video.hero-video{
+    max-width:min(40vw,480px);max-height:min(78vh,700px);
+    filter:saturate(1.12) contrast(1.08) brightness(1.04);
+    -webkit-backface-visibility:hidden;
+    will-change:transform,opacity;
+    animation:walkCycle 16s cubic-bezier(.44,0,.56,1) infinite}
+  @keyframes walkCycle{
+    0%{transform:translateX(46vw) scale(1.05);opacity:0}
+    10%{opacity:1}
+    42%{transform:translateX(0) scale(1);opacity:1}
+    88%{transform:translateX(0) scale(1);opacity:1}
+    100%{transform:translateX(46vw) scale(1.05);opacity:0}}
+  .hero-veil{background:
+    linear-gradient(to top,rgba(11,11,13,.94) 0%,rgba(11,11,13,.22) 28%,rgba(11,11,13,0) 58%,rgba(11,11,13,.30) 100%),
+    radial-gradient(120% 95% at 72% 46%,rgba(0,0,0,0) 0%,rgba(0,0,0,.14) 74%,rgba(0,0,0,.46) 100%),
+    linear-gradient(90deg,rgba(11,11,13,.92) 0%,rgba(11,11,13,.58) 34%,rgba(11,11,13,.10) 52%,rgba(11,11,13,0) 70%)}
+  .hero-grain{opacity:.26}
+  .hero-open .hero-grid{max-width:min(52vw,600px)}
+  .hero-open .wrap{padding-left:clamp(24px,4vw,56px);padding-right:24px}
+  @media(max-width:720px){
+    .hero-stage{justify-content:center;padding:0 0 104px}
+    .hero-stage video.hero-video{max-width:78vw;max-height:50vh;animation:none;opacity:1;transform:none}
+    .hero-open .hero-grid{max-width:none}
+    .hero-open .wrap{padding-left:24px;padding-right:24px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .hero-stage video.hero-video{animation:none;opacity:1;transform:none}
+  }
 </style>
 <noscript><style>[data-ap],[data-reveal]{opacity:1!important;transform:none!important;translate:0 0!important}.mask>span{transform:none!important}</style></noscript>
 </head>
