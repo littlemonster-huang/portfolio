@@ -277,8 +277,16 @@
     max-width:min(34vw,420px);max-height:min(72vh,660px);
     object-fit:contain;object-position:center;
     mix-blend-mode:screen;filter:saturate(1.12) contrast(1.04) brightness(1.14);
-    -webkit-backface-visibility:hidden;backface-visibility:hidden;will-change:transform,opacity;
-    animation:heroWalk 16s cubic-bezier(.44,0,.56,1) infinite}
+    -webkit-backface-visibility:hidden;backface-visibility:hidden;will-change:transform,opacity}
+  .hero-figure{position:relative;display:inline-block;line-height:0;
+    animation:heroWalk 16s cubic-bezier(.44,0,.56,1) infinite;will-change:transform,opacity}
+  .hero-hello{position:absolute;right:calc(100% + 16px);bottom:34%;z-index:2;
+    padding:7px 13px;border-radius:999px;white-space:nowrap;pointer-events:none;
+    font-family:"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.2;
+    font-size:15px;font-weight:600;letter-spacing:.02em;color:#f2f0ec;
+    background:rgba(20,20,23,.62);border:1px solid rgba(242,240,236,.28);
+    backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+    box-shadow:0 6px 20px rgba(0,0,0,.35);opacity:.92}
   @keyframes heroWalk{
     0%{transform:translateX(12vw) scale(1.03);opacity:0}
     10%{opacity:1}
@@ -304,14 +312,17 @@
   @media(max-width:720px){
     .hero-open{min-height:100svh;padding-top:98px}
     .hero-stage{justify-content:center;padding:0 0 104px}
-    .hero-stage .hero-video{animation:none;opacity:1;transform:none;max-width:78vw;max-height:50vh}
+    .hero-stage .hero-video{opacity:1;transform:none;max-width:78vw;max-height:50vh}
+    .hero-figure{animation:none}
+    .hero-hello{right:calc(100% + 10px);bottom:38%;font-size:13px;padding:6px 11px}
     .hero-open .hero-grid{max-width:none}
     .hero-open .wrap{max-width:1200px;padding-left:24px;padding-right:24px}
     .hero-open .hero h1{font-size:clamp(46px,15vw,84px)}
     .hero-veil{background:linear-gradient(180deg,rgba(11,11,13,.84) 0%,rgba(11,11,13,.70) 40%,rgba(11,11,13,.93) 100%)}
   }
   @media (prefers-reduced-motion:reduce){
-    .hero-stage .hero-video{animation:none;opacity:1;transform:none}
+    .hero-stage .hero-video{opacity:1;transform:none}
+    .hero-figure{animation:none}
   }
 </style></noscript>
 </head>
@@ -334,7 +345,7 @@
 <!-- HERO -->
 <header class="hero hero-open">
   <div class="hero-stage hero-img" id="heroVisual" data-ap="img">
-    <video class="hero-video" autoplay muted loop playsinline preload="auto" poster="assets/ip-walk-firstframe.png" src="assets/ip-motion.mp4" controlsList="nodownload nofullscreen noremoteplayback" disablePictureInPicture disableRemotePlayback style="pointer-events:none" oncontextmenu="return false"></video>
+    <div class="hero-figure"><video class="hero-video" autoplay muted loop playsinline preload="auto" poster="assets/ip-walk-firstframe.png" src="assets/ip-motion.mp4" controlsList="nodownload nofullscreen noremoteplayback" disablePictureInPicture disableRemotePlayback style="pointer-events:none" oncontextmenu="return false"></video><span class="hero-hello" aria-hidden="true">Hello呀！</span></div>
     <div class="hero-veil"></div>
     <div class="hero-grain"></div>
     <div class="hero-ambient" id="heroAmbient"></div>
