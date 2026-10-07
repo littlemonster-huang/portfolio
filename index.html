@@ -275,7 +275,7 @@
     padding:0 clamp(56px,11vw,200px) 0 0;isolation:isolate;-webkit-mask-image:none;mask-image:none}
   .hero-stage .hero-video{position:absolute;right:9%;bottom:16%;width:min(30vw,360px);height:auto;
     max-width:none;max-height:none;
-    background:url(assets/ip-walk-firstframe.png) right center/cover no-repeat #0b0b0d;
+    
     mix-blend-mode:screen;filter:saturate(1.12) contrast(1.04) brightness(1.14);
     -webkit-backface-visibility:hidden;backface-visibility:hidden;will-change:transform,opacity;
     animation:heroWalk 16s cubic-bezier(.44,0,.56,1) infinite}
@@ -341,7 +341,7 @@
 <!-- HERO -->
 <header class="hero hero-open">
   <div class="hero-stage hero-img" id="heroVisual" data-ap="img">
-    <canvas class="hero-video" id="heroCanvas" width="720" height="676" aria-hidden="true"></canvas>
+    <video class="hero-video" autoplay muted loop playsinline preload="auto" poster="assets/ip-walk-firstframe.png" src="assets/ip-motion.mp4" controlsList="nodownload nofullscreen noremoteplayback" disablePictureInPicture disableRemotePlayback style="pointer-events:none" oncontextmenu="return false"></video>
     <div class="hero-veil"></div>
     <div class="hero-grain"></div>
     <div class="hero-ambient" id="heroAmbient"></div>
@@ -1188,32 +1188,6 @@
   })();
 
 
-  /* ---------- Hero 人物动画：canvas 逐帧绘制（避免浏览器原生「下载/投屏」浮层） ---------- */
-  (function heroCanvas(){
-    var cv = doc.getElementById('heroCanvas');
-    if(!cv) return;
-    var ctx = cv.getContext('2d');
-    var v = doc.createElement('video');
-    v.muted = true; v.loop = true; v.playsInline = true; v.autoplay = true; v.preload = 'auto';
-    v.setAttribute('playsinline',''); v.setAttribute('webkit-playsinline','');
-    v.setAttribute('disablePictureInPicture',''); v.setAttribute('controlsList','nodownload nofullscreen noremoteplayback');
-    v.src = 'assets/ip-motion.mp4';
-    v.style.cssText = 'position:absolute;left:0;top:0;width:1px;height:1px;opacity:.01;pointer-events:none;z-index:-1';
-    cv.parentNode.appendChild(v);
-    var drawing = false;
-    function loop(){
-      if(!drawing){
-        if(v.readyState >= 2 && v.videoWidth){
-          try{ ctx.drawImage(v, 0, 0, cv.width, cv.height); }catch(e){}
-        }
-        if(v.paused){ var pr = v.play(); if(pr && pr.catch) pr.catch(function(){}); }
-      }
-      requestAnimationFrame(loop);
-    }
-    requestAnimationFrame(loop);
-    v.addEventListener('playing', function(){ drawing = true; });
-    v.addEventListener('error', function(){ cv.style.display = 'none'; });
-  })();
 
 })();
 </script>
