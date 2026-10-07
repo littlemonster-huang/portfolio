@@ -267,6 +267,43 @@
     .marquee-track{transform:none!important}
     *{animation-duration:.01ms!important;transition-duration:.01ms!important}
   }
+
+  /* ---------- 开屏背景 · 人物动画全屏（2026.10.07） ---------- */
+  .hero-open{min-height:100vh;position:relative;overflow:hidden;padding-top:118px;padding-bottom:0;background:#0b0b0d}
+  .hero-stage{position:absolute;inset:0;z-index:0;overflow:hidden;background:#0b0b0d;-webkit-mask-image:none;mask-image:none}
+  .hero-stage video.hero-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 40%;
+    transform:scale(1.04);filter:saturate(1.06) contrast(1.05);
+    animation:kbPush 30s cubic-bezier(.44,0,.56,1) infinite alternate}
+  @keyframes kbPush{from{transform:scale(1.04) translate3d(0,0,0)}to{transform:scale(1.13) translate3d(-1.2%,-1.4%,0)}}
+  .hero-veil{position:absolute;inset:0;pointer-events:none;
+    background:linear-gradient(94deg,rgba(11,11,13,.95) 0%,rgba(11,11,13,.90) 26%,rgba(11,11,13,.62) 48%,rgba(11,11,13,.22) 72%,rgba(11,11,13,.40) 100%),
+      radial-gradient(122% 88% at 78% 14%,rgba(0,0,0,0) 0%,rgba(0,0,0,.40) 76%,rgba(0,0,0,.74) 100%),
+      linear-gradient(to top,rgba(11,11,13,.94) 0%,rgba(11,11,13,0) 40%)}
+  .hero-grain{position:absolute;inset:0;pointer-events:none;opacity:.55;
+    background-image:radial-gradient(rgba(255,255,255,.05) 1px,transparent 1px);background-size:3px 3px}
+  .hero-ambient{position:absolute;inset:0;pointer-events:none;z-index:1;opacity:0;transition:opacity .7s ease;
+    background:radial-gradient(540px circle at var(--mx,62%) var(--my,36%),rgba(194,69,88,.17),rgba(194,69,88,.05) 44%,transparent 70%)}
+  .hero-ambient.on{opacity:1}
+  .hero-inner{position:relative;z-index:2;flex:1;display:flex;align-items:center}
+  .hero-open .hero-grid{grid-template-columns:1fr;max-width:780px}
+  .hero-open .hero h1{font-size:clamp(56px,10.5vw,132px)}
+  .hero-open .hero .sub{max-width:640px}
+  .hero-cue{position:absolute;left:50%;bottom:108px;transform:translateX(-50%);z-index:3;
+    display:flex;flex-direction:column;align-items:center;gap:12px;color:#6d6963;font-size:10px;letter-spacing:.42em}
+  .hero-cue i{display:block;width:1px;height:52px;background:linear-gradient(to bottom,rgba(242,240,236,.6),transparent);
+    animation:cueDrop 2.4s cubic-bezier(.44,0,.56,1) infinite}
+  @keyframes cueDrop{0%{transform:scaleY(.15);transform-origin:top;opacity:0}38%{opacity:1}100%{transform:scaleY(1);transform-origin:top;opacity:0}}
+  @media(max-width:720px){
+    .hero-open{min-height:100svh;padding-top:98px}
+    .hero-open .hero-grid{max-width:none}
+    .hero-open .hero h1{font-size:clamp(46px,15vw,84px)}
+    .hero-veil{background:linear-gradient(180deg,rgba(11,11,13,.84) 0%,rgba(11,11,13,.70) 40%,rgba(11,11,13,.93) 100%)}
+    .hero-cue{bottom:100px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .hero-stage video.hero-video{animation:none}
+    .hero-cue i{animation:none}
+  }
 </style>
 <noscript><style>[data-ap],[data-reveal]{opacity:1!important;transform:none!important;translate:0 0!important}.mask>span{transform:none!important}</style></noscript>
 </head>
@@ -287,8 +324,14 @@
 </nav>
 
 <!-- HERO -->
-<header class="hero">
-  <div class="wrap">
+<header class="hero hero-open">
+  <div class="hero-stage hero-img" id="heroVisual" data-ap="img">
+    <video class="hero-video" autoplay muted loop playsinline preload="auto" poster="assets/ip.png" src="assets/ip-motion.mp4" controlsList="nodownload nofullscreen noremoteplayback" disablePictureInPicture disableRemotePlayback style="pointer-events:none" oncontextmenu="return false"></video>
+    <div class="hero-veil"></div>
+    <div class="hero-grain"></div>
+    <div class="hero-ambient" id="heroAmbient"></div>
+  </div>
+  <div class="wrap hero-inner">
     <div class="hero-grid">
       <div>
         <div class="kicker" data-ap="up" style="--d:.4s">PORTFOLIO</div>
@@ -302,11 +345,9 @@
           <a class="btn btn-line" href="https://github.com/littlemonster-huang" target="_blank" rel="noopener"><span>GitHub 主页</span></a>
         </div>
       </div>
-      <div class="hero-visual" data-parallax="46">
-        <div class="hero-img" id="heroVisual" data-ap="img"><video autoplay muted loop playsinline preload="auto" poster="assets/ip.png" src="assets/ip-motion.mp4" controlsList="nodownload nofullscreen noremoteplayback" disablePictureInPicture disableRemotePlayback style="pointer-events:none" oncontextmenu="return false"></video></div>
-      </div>
     </div>
   </div>
+  <div class="hero-cue" aria-hidden="true"><i></i>SCROLL</div>
   <div class="marquee" id="wordMarquee">
     <div class="marquee-clip">
       <div class="marquee-track">
@@ -1113,6 +1154,22 @@
     doc.getElementById('aiModalX').addEventListener('click', close);
     m.addEventListener('click', function(e){ if(e.target === m) close(); });
     doc.addEventListener('keydown', function(e){ if(e.key === 'Escape') close(); });
+  })();
+
+
+  /* ---------- 开屏氛围光：跟随光标 ---------- */
+  (function heroAmbient(){
+    var st = doc.getElementById('heroVisual');
+    var am = doc.getElementById('heroAmbient');
+    if(!st || !am || RM || isTouch) return;
+    st.addEventListener('pointermove', function(e){
+      var r = st.getBoundingClientRect();
+      if(!r.width || !r.height) return;
+      am.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100).toFixed(2) + '%');
+      am.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100).toFixed(2) + '%');
+      am.classList.add('on');
+    }, { passive:true });
+    st.addEventListener('pointerleave', function(){ am.classList.remove('on'); });
   })();
 
 })();
