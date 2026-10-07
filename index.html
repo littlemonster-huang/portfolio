@@ -304,6 +304,25 @@
     .hero-stage video.hero-video{animation:none}
     .hero-cue i{animation:none}
   }
+
+  /* ---------- 开屏背景 v2：人物按原比例置于背景右侧，不再铺满（2026.10.07 调整） ---------- */
+  .hero-stage{display:flex;align-items:center;justify-content:flex-end;
+    padding:0 clamp(14px,3.5vw,64px) 0 0}
+  .hero-stage video.hero-video{width:auto;height:auto;max-width:min(44vw,540px);max-height:min(84vh,760px);
+    object-fit:contain;object-position:center;filter:saturate(1.05) contrast(1.03) brightness(.94);
+    animation:kbFloat 20s cubic-bezier(.44,0,.56,1) infinite alternate}
+  @keyframes kbFloat{from{transform:scale(1)}to{transform:scale(1.06)}}
+  .hero-veil{background:
+    linear-gradient(to top,rgba(11,11,13,.95) 0%,rgba(11,11,13,.26) 30%,rgba(11,11,13,.06) 62%,rgba(11,11,13,.45) 100%),
+    radial-gradient(115% 92% at 70% 46%,rgba(0,0,0,0) 0%,rgba(0,0,0,.26) 72%,rgba(0,0,0,.60) 100%),
+    linear-gradient(90deg,rgba(11,11,13,.90) 0%,rgba(11,11,13,.50) 40%,rgba(11,11,13,.04) 66%,rgba(11,11,13,.34) 100%)}
+  @media(max-width:720px){
+    .hero-stage{justify-content:center;padding:0 0 104px}
+    .hero-stage video.hero-video{max-width:84vw;max-height:54vh}
+  }
+
+  /* ---------- 开屏背景 v3：人物尺寸收敛到接近原版视觉重量 + 修复 poster（2026.10.07） ---------- */
+  .hero-stage video.hero-video{max-width:min(40vw,480px);max-height:min(78vh,700px)}
 </style>
 <noscript><style>[data-ap],[data-reveal]{opacity:1!important;transform:none!important;translate:0 0!important}.mask>span{transform:none!important}</style></noscript>
 </head>
@@ -326,7 +345,7 @@
 <!-- HERO -->
 <header class="hero hero-open">
   <div class="hero-stage hero-img" id="heroVisual" data-ap="img">
-    <video class="hero-video" autoplay muted loop playsinline preload="auto" poster="assets/ip.png" src="assets/ip-motion.mp4" controlsList="nodownload nofullscreen noremoteplayback" disablePictureInPicture disableRemotePlayback style="pointer-events:none" oncontextmenu="return false"></video>
+    <video class="hero-video" autoplay muted loop playsinline preload="auto" poster="assets/ip-walk-firstframe.png" src="assets/ip-motion.mp4" controlsList="nodownload nofullscreen noremoteplayback" disablePictureInPicture disableRemotePlayback style="pointer-events:none" oncontextmenu="return false"></video>
     <div class="hero-veil"></div>
     <div class="hero-grain"></div>
     <div class="hero-ambient" id="heroAmbient"></div>
