@@ -295,11 +295,12 @@
     background:radial-gradient(540px circle at var(--mx,62%) var(--my,36%),rgba(194,69,88,.17),rgba(194,69,88,.05) 44%,transparent 70%)}
   .hero-ambient.on{opacity:1}
   .hero-inner{position:relative;z-index:2;flex:1;display:flex;align-items:center}
-  .hero-open .hero-grid{grid-template-columns:1fr;max-width:min(53vw,575px)}
+  .hero-open .hero-grid{grid-template-columns:1fr;max-width:min(56vw,620px)}
   .hero-open .wrap{max-width:none;margin-left:0;margin-right:auto;
     padding-left:clamp(28px,7vw,120px);padding-right:24px}
   .hero-open .hero h1{font-size:clamp(56px,10.5vw,132px)}
   .hero-open .hero .sub{max-width:640px;font-size:clamp(12px,1.18vw,15px);line-height:2}
+  .hero-open .hero .sub-l + .sub-l{text-align:justify;text-align-last:justify}
   .hero-cue{position:absolute;left:50%;bottom:108px;transform:translateX(-50%);z-index:3;
     display:flex;flex-direction:column;align-items:center;gap:12px;color:#6d6963;font-size:10px;letter-spacing:.42em}
   .hero-cue i{display:block;width:1px;height:52px;background:linear-gradient(to bottom,rgba(242,240,236,.6),transparent);
@@ -1193,20 +1194,24 @@
     if(!cv) return;
     var ctx = cv.getContext('2d');
     var v = doc.createElement('video');
-    v.muted = true; v.loop = true; v.playsInline = true; v.autoplay = true;
+    v.muted = true; v.loop = true; v.playsInline = true; v.autoplay = true; v.preload = 'auto';
     v.setAttribute('playsinline',''); v.setAttribute('webkit-playsinline','');
     v.setAttribute('disablePictureInPicture',''); v.setAttribute('controlsList','nodownload nofullscreen noremoteplayback');
     v.src = 'assets/ip-motion.mp4';
-    v.style.cssText = 'position:absolute;left:0;top:0;width:100%;height:100%;opacity:0;pointer-events:none;z-index:0';
+    v.style.cssText = 'position:absolute;left:0;top:0;width:1px;height:1px;opacity:.01;pointer-events:none;z-index:-1';
     cv.parentNode.appendChild(v);
-    function draw(){
-      if(v.readyState >= 2 && ctx){ try{ ctx.drawImage(v, 0, 0, cv.width, cv.height); }catch(e){} }
-      requestAnimationFrame(draw);
+    var drawing = false;
+    function loop(){
+      if(!drawing){
+        if(v.readyState >= 2 && v.videoWidth){
+          try{ ctx.drawImage(v, 0, 0, cv.width, cv.height); }catch(e){}
+        }
+        if(v.paused){ var pr = v.play(); if(pr && pr.catch) pr.catch(function(){}); }
+      }
+      requestAnimationFrame(loop);
     }
-    v.addEventListener('loadeddata', function(){
-      var p = v.play(); if(p && p.catch) p.catch(function(){});
-      draw();
-    });
+    requestAnimationFrame(loop);
+    v.addEventListener('playing', function(){ drawing = true; });
     v.addEventListener('error', function(){ cv.style.display = 'none'; });
   })();
 
