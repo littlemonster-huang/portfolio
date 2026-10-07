@@ -269,17 +269,15 @@
   }
 
     /* ---------- HERO 最终版：左文字区 + 右侧人物动画（2026.10.07 重写，替代 v1~v6 补丁） ---------- */
-  .hero-open{min-height:100vh;position:relative;overflow:hidden;padding:118px 0 0;background:var(--bg)}
-  .hero-stage{position:absolute;inset:0;z-index:0;overflow:hidden;background:var(--bg);
+  .hero-open{min-height:100vh;position:relative;overflow:hidden;padding:118px 0 0;background:#0b0b0d}
+  .hero-stage{position:absolute;inset:0;z-index:0;overflow:hidden;background:#0b0b0d;
     display:flex;align-items:center;justify-content:flex-end;
     padding:0 clamp(56px,11vw,200px) 0 0;isolation:isolate;-webkit-mask-image:none;mask-image:none}
   .hero-stage .hero-video{position:static;width:auto;height:auto;
     max-width:min(34vw,420px);max-height:min(72vh,660px);
     object-fit:contain;object-position:center;
     mix-blend-mode:screen;filter:saturate(1.12) contrast(1.04) brightness(1.14);
-    -webkit-backface-visibility:hidden;backface-visibility:hidden;will-change:transform,opacity;
-    -webkit-mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.45) 40%,rgba(0,0,0,.92) 64%,#000 76%);
-    mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.45) 40%,rgba(0,0,0,.92) 64%,#000 76%)}
+    -webkit-backface-visibility:hidden;backface-visibility:hidden;will-change:transform,opacity}
   .hero-figure{position:relative;display:inline-block;line-height:0;
     animation:heroWalk 16s cubic-bezier(.44,0,.56,1) infinite;will-change:transform,opacity}
   .hero-hello{position:absolute;right:calc(100% + 16px);bottom:34%;z-index:2;
@@ -314,9 +312,7 @@
   @media(max-width:720px){
     .hero-open{min-height:100svh;padding-top:98px}
     .hero-stage{justify-content:center;padding:0 0 104px}
-    .hero-stage .hero-video{opacity:1;transform:none;max-width:78vw;max-height:50vh;
-      -webkit-mask-image:radial-gradient(ellipse 78% 74% at 50% 48%,#000 52%,transparent 88%);
-      mask-image:radial-gradient(ellipse 78% 74% at 50% 48%,#000 52%,transparent 88%)}
+    .hero-stage .hero-video{opacity:1;transform:none;max-width:78vw;max-height:50vh}
     .hero-figure{animation:none}
     .hero-hello{right:calc(100% + 10px);bottom:38%;font-size:13px;padding:6px 11px}
     .hero-open .hero-grid{max-width:none}
