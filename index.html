@@ -354,6 +354,23 @@
   @media (prefers-reduced-motion:reduce){
     .hero-stage video.hero-video{animation:none;opacity:1;transform:none}
   }
+
+  /* ---------- 开屏背景 v5：去除视频黑底（screen 混合）+ 人物循环走到接近中线（2026.10.07） ---------- */
+  .hero-stage{isolation:isolate;justify-content:flex-end;padding:0 clamp(56px,26vw,420px) 0 0}
+  .hero-stage video.hero-video{
+    mix-blend-mode:screen;
+    filter:saturate(1.10) contrast(1.06) brightness(.98);
+    animation:walkInLoop 16s cubic-bezier(.44,0,.56,1) infinite}
+  @keyframes walkInLoop{
+    0%{transform:translateX(64vw) scale(1.04);opacity:0}
+    8%{opacity:1}
+    40%{transform:translateX(0) scale(1);opacity:1}
+    86%{transform:translateX(0) scale(1);opacity:1}
+    100%{transform:translateX(64vw) scale(1.04);opacity:0}}
+  @media(max-width:720px){
+    .hero-stage{justify-content:center;padding:0 0 104px}
+    .hero-stage video.hero-video{max-width:78vw;max-height:50vh;animation:none;opacity:1;transform:none}
+  }
 </style>
 <noscript><style>[data-ap],[data-reveal]{opacity:1!important;transform:none!important;translate:0 0!important}.mask>span{transform:none!important}</style></noscript>
 </head>
