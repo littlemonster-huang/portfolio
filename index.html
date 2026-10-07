@@ -371,6 +371,29 @@
     .hero-stage{justify-content:center;padding:0 0 104px}
     .hero-stage video.hero-video{max-width:78vw;max-height:50vh;animation:none;opacity:1;transform:none}
   }
+
+  /* ---------- 开屏背景 v6：文字进左侧蓝区、人物活动范围锁右侧红区、调亮（2026.10.07） ---------- */
+  .hero-open .wrap{max-width:none;padding-left:clamp(28px,7vw,120px);padding-right:24px}
+  .hero-open .hero-grid{max-width:min(44vw,560px)}
+  .hero-stage{padding:0 clamp(56px,11vw,200px) 0 0}
+  .hero-stage video.hero-video{
+    max-width:min(34vw,420px);max-height:min(72vh,660px);
+    filter:saturate(1.12) contrast(1.04) brightness(1.14);
+    animation:walkLoop2 16s cubic-bezier(.44,0,.56,1) infinite}
+  @keyframes walkLoop2{
+    0%{transform:translateX(12vw) scale(1.03);opacity:0}
+    10%{opacity:1}
+    42%{transform:translateX(0) scale(1);opacity:1}
+    86%{transform:translateX(0) scale(1);opacity:1}
+    100%{transform:translateX(12vw) scale(1.03);opacity:0}}
+  .hero-veil{background:
+    linear-gradient(to top,rgba(11,11,13,.90) 0%,rgba(11,11,13,.16) 22%,rgba(11,11,13,0) 48%,rgba(11,11,13,.26) 100%),
+    radial-gradient(118% 92% at 74% 44%,rgba(0,0,0,0) 0%,rgba(0,0,0,.10) 76%,rgba(0,0,0,.40) 100%),
+    linear-gradient(90deg,rgba(11,11,13,.90) 0%,rgba(11,11,13,.50) 30%,rgba(11,11,13,.06) 46%,rgba(11,11,13,0) 62%)}
+  @media(max-width:720px){
+    .hero-open .wrap{max-width:1200px;padding-left:24px;padding-right:24px}
+    .hero-open .hero-grid{max-width:none}
+  }
 </style>
 <noscript><style>[data-ap],[data-reveal]{opacity:1!important;transform:none!important;translate:0 0!important}.mask>span{transform:none!important}</style></noscript>
 </head>
