@@ -273,9 +273,9 @@
   .hero-stage{position:absolute;inset:0;z-index:0;overflow:hidden;background:#0b0b0d;
     display:flex;align-items:center;justify-content:flex-end;
     padding:0 clamp(56px,11vw,200px) 0 0;isolation:isolate;-webkit-mask-image:none;mask-image:none}
-  .hero-stage video.hero-video{position:static;width:auto;height:auto;
+  .hero-stage .hero-video{position:static;width:auto;height:auto;
     max-width:min(34vw,420px);max-height:min(72vh,660px);
-    object-fit:contain;object-position:center;
+    background:url(assets/ip-walk-firstframe.png) right center/cover no-repeat #0b0b0d;
     mix-blend-mode:screen;filter:saturate(1.12) contrast(1.04) brightness(1.14);
     -webkit-backface-visibility:hidden;backface-visibility:hidden;will-change:transform,opacity;
     animation:heroWalk 16s cubic-bezier(.44,0,.56,1) infinite}
@@ -308,7 +308,7 @@
   @media(max-width:720px){
     .hero-open{min-height:100svh;padding-top:98px}
     .hero-stage{justify-content:center;padding:0 0 104px}
-    .hero-stage video.hero-video{animation:none;opacity:1;transform:none;max-width:78vw;max-height:50vh}
+    .hero-stage .hero-video{animation:none;opacity:1;transform:none;max-width:78vw;max-height:50vh}
     .hero-open .hero-grid{max-width:none}
     .hero-open .wrap{max-width:1200px;padding-left:24px;padding-right:24px}
     .hero-open .hero h1{font-size:clamp(46px,15vw,84px)}
@@ -316,7 +316,7 @@
     .hero-cue{bottom:100px}
   }
   @media (prefers-reduced-motion:reduce){
-    .hero-stage video.hero-video{animation:none;opacity:1;transform:none}
+    .hero-stage .hero-video{animation:none;opacity:1;transform:none}
     .hero-cue i{animation:none}
   }
 </style></noscript>
@@ -340,7 +340,7 @@
 <!-- HERO -->
 <header class="hero hero-open">
   <div class="hero-stage hero-img" id="heroVisual" data-ap="img">
-    <video class="hero-video" autoplay muted loop playsinline preload="auto" poster="assets/ip-walk-firstframe.png" src="assets/ip-motion.mp4" controlsList="nodownload nofullscreen noremoteplayback" disablePictureInPicture disableRemotePlayback style="pointer-events:none" oncontextmenu="return false"></video>
+    <canvas class="hero-video" id="heroCanvas" width="720" height="676" aria-hidden="true"></canvas>
     <div class="hero-veil"></div>
     <div class="hero-grain"></div>
     <div class="hero-ambient" id="heroAmbient"></div>
@@ -1184,6 +1184,30 @@
       am.classList.add('on');
     }, { passive:true });
     st.addEventListener('pointerleave', function(){ am.classList.remove('on'); });
+  })();
+
+
+  /* ---------- Hero 人物动画：canvas 逐帧绘制（避免浏览器原生「下载/投屏」浮层） ---------- */
+  (function heroCanvas(){
+    var cv = doc.getElementById('heroCanvas');
+    if(!cv) return;
+    var ctx = cv.getContext('2d');
+    var v = doc.createElement('video');
+    v.muted = true; v.loop = true; v.playsInline = true; v.autoplay = true;
+    v.setAttribute('playsinline',''); v.setAttribute('webkit-playsinline','');
+    v.setAttribute('disablePictureInPicture',''); v.setAttribute('controlsList','nodownload nofullscreen noremoteplayback');
+    v.src = 'assets/ip-motion.mp4';
+    v.style.cssText = 'position:absolute;left:0;top:0;width:100%;height:100%;opacity:0;pointer-events:none;z-index:0';
+    cv.parentNode.appendChild(v);
+    function draw(){
+      if(v.readyState >= 2 && ctx){ try{ ctx.drawImage(v, 0, 0, cv.width, cv.height); }catch(e){} }
+      requestAnimationFrame(draw);
+    }
+    v.addEventListener('loadeddata', function(){
+      var p = v.play(); if(p && p.catch) p.catch(function(){});
+      draw();
+    });
+    v.addEventListener('error', function(){ cv.style.display = 'none'; });
   })();
 
 })();
