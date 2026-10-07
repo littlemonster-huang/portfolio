@@ -273,9 +273,10 @@
   .hero-stage{position:absolute;inset:0;z-index:0;overflow:hidden;background:#0b0b0d;
     display:flex;align-items:center;justify-content:flex-end;
     padding:0 clamp(56px,11vw,200px) 0 0;isolation:isolate;-webkit-mask-image:none;mask-image:none}
-  .hero-stage video.hero-video{position:absolute;right:7%;bottom:15%;width:min(38vw,420px);height:auto;
-    object-fit:cover;object-position:100% center;
-    mix-blend-mode:screen;filter:saturate(1.34) contrast(1.16) brightness(1.85);
+  .hero-stage video.hero-video{position:static;width:auto;height:auto;
+    max-width:min(34vw,420px);max-height:min(72vh,660px);
+    object-fit:contain;object-position:center;
+    mix-blend-mode:screen;filter:saturate(1.12) contrast(1.04) brightness(1.14);
     -webkit-backface-visibility:hidden;backface-visibility:hidden;will-change:transform,opacity;
     animation:heroWalk 16s cubic-bezier(.44,0,.56,1) infinite}
   @keyframes heroWalk{
@@ -307,7 +308,7 @@
   @media(max-width:720px){
     .hero-open{min-height:100svh;padding-top:98px}
     .hero-stage{justify-content:center;padding:0 0 104px}
-    .hero-stage video.hero-video{animation:none;opacity:1;left:50%;right:auto;top:auto;bottom:16%;width:min(60vw,250px);height:auto;transform:translateX(-50%)}
+    .hero-stage video.hero-video{animation:none;opacity:1;transform:none;max-width:78vw;max-height:50vh}
     .hero-open .hero-grid{max-width:none}
     .hero-open .wrap{max-width:1200px;padding-left:24px;padding-right:24px}
     .hero-open .hero h1{font-size:clamp(46px,15vw,84px)}
