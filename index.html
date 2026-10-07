@@ -26,7 +26,7 @@
   #topline{position:fixed;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--wine1),var(--wine2));z-index:99}
   nav{position:fixed;top:4px;left:0;right:0;z-index:98;background:rgba(14,14,16,.86);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);transition:box-shadow .4s var(--e-soft),background .4s var(--e-soft)}
   nav.scrolled{box-shadow:0 10px 34px rgba(0,0,0,.5);background:rgba(12,12,14,.92)}
-  nav .wrap{display:flex;align-items:center;justify-content:space-between;height:60px}
+  nav .wrap{max-width:none;margin-left:0;margin-right:auto;display:flex;align-items:center;justify-content:space-between;height:60px;padding-left:clamp(28px,7vw,120px);padding-right:clamp(24px,4vw,64px)}
   .logo{font-weight:800;font-size:17px;letter-spacing:.06em;display:flex;align-items:baseline;gap:12px}
   .logo .logo-cn{font-size:17px;font-weight:800;letter-spacing:.06em;color:var(--text)}
   .logo .logo-sep{font-style:normal;align-self:center;width:1px;height:15px;background:var(--line);flex:none}
@@ -295,11 +295,11 @@
     background:radial-gradient(540px circle at var(--mx,62%) var(--my,36%),rgba(194,69,88,.17),rgba(194,69,88,.05) 44%,transparent 70%)}
   .hero-ambient.on{opacity:1}
   .hero-inner{position:relative;z-index:2;flex:1;display:flex;align-items:center}
-  .hero-open .hero-grid{grid-template-columns:1fr;max-width:min(42vw,520px)}
+  .hero-open .hero-grid{grid-template-columns:1fr;max-width:min(53vw,575px)}
   .hero-open .wrap{max-width:none;margin-left:0;margin-right:auto;
     padding-left:clamp(28px,7vw,120px);padding-right:24px}
   .hero-open .hero h1{font-size:clamp(56px,10.5vw,132px)}
-  .hero-open .hero .sub{max-width:640px}
+  .hero-open .hero .sub{max-width:640px;font-size:clamp(12px,1.18vw,15px);line-height:2}
   .hero-cue{position:absolute;left:50%;bottom:108px;transform:translateX(-50%);z-index:3;
     display:flex;flex-direction:column;align-items:center;gap:12px;color:#6d6963;font-size:10px;letter-spacing:.42em}
   .hero-cue i{display:block;width:1px;height:52px;background:linear-gradient(to bottom,rgba(242,240,236,.6),transparent);
