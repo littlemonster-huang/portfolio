@@ -2,4 +2,7 @@ _backup*/
 _*/
 *.bak
 *.bak-*
+*.bak_*
+*.orig
+*.rej
 ~$*
